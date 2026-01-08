@@ -1,11 +1,16 @@
 <?php
-// --- KONFIGURASI DATABASE ---
-$host = "localhost";
-$user = "root";
-$pass = "";
-$db   = "kontenjarun";
+// Gunakan getenv agar aman dan otomatis
+$host = getenv('MYSQLHOST');
+$user = getenv('MYSQLUSER');
+$pass = getenv('MYSQLPASSWORD');
+$db   = getenv('MYSQLDATABASE');
+$port = getenv('MYSQLPORT');
 
-$conn = mysqli_connect($host, $user, $pass, $db);
+$conn = mysqli_connect($host, $user, $pass, $db, $port);
+
+if (!$conn) {
+    die("Koneksi gagal: " . mysqli_connect_error());
+}
 $sql_count = "SELECT COUNT(*) as total FROM ide_konten";
 $result_count = mysqli_query($conn, $sql_count);
 $data_count = mysqli_fetch_assoc($result_count);
@@ -492,4 +497,5 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 </body>
+
 </html>
