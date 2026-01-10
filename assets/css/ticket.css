@@ -1,0 +1,20 @@
+/* ticket.css - ticket carousel / stage */
+
+.ticket-section { background: var(--green); padding:100px 0; position:relative; overflow:hidden; }
+.ticket-stage { height:450px; position:relative; display:flex; align-items:center; justify-content:center; }
+
+.ticket-card {
+  position:absolute; width:400px; aspect-ratio:16/9; transition:all .6s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 15px 35px rgba(0,0,0,.2); z-index:10; opacity:0;
+}
+
+/* states */
+.ticket-card.active { opacity:1; transform:scale(1.1) rotate(0); z-index:50; }
+.ticket-card.prev { transform:translateX(-350px) rotate(-12deg) scale(.9); opacity:.9; z-index:30; }
+.ticket-card.next { transform:translateX(350px) rotate(12deg) scale(.9); opacity:.9; z-index:30; }
+.ticket-card.hidden-ticket { transform:scale(.5); opacity:0; pointer-events:none; }
+
+/* dots */
+#ticket-dots { display:flex; gap:8px; justify-content:center; margin-top:18px; }
+.dot { width:14px; height:14px; border-radius:4px; background:#ffffff; opacity:0.3; transition:all .3s ease; }
+.dot.active { opacity:1; width:30px; }
