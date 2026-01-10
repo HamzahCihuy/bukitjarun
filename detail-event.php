@@ -253,15 +253,17 @@ $list_event = [
 
             try {
                 // 1. CEK VIDEO KE PYTHON
-                const response = await fetch('http://127.0.0.1:5000/cek-video', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        url: inputLink,
-                        misi_id: index,
-                        nama: inputNama
-                    })
-                });
+                // ✅ KODE YANG BENAR
+            const response = await fetch('https://bukitjarun.up.railway.app/cek-video', { 
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+            url: inputLink,
+            misi_id: index,
+            nama: inputNama
+                })
+            });
+                
 
                 if (!response.ok) throw new Error("Gagal terhubung ke Python (Pastikan api.py jalan)");
                 const data = await response.json();
@@ -327,4 +329,5 @@ $list_event = [
         }
     </script>
 </body>
+
 </html>
