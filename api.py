@@ -24,7 +24,12 @@ if not GOOGLE_API_KEY:
 else:
     print("✅ API Key berhasil dimuat dari Railway.")
     genai.configure(api_key=GOOGLE_API_KEY)
-
+if GOOGLE_API_KEY:
+    # Tampilkan 5 huruf awal dan 5 huruf akhir key di Log Railway
+    # Ini aman karena tidak menampilkan seluruh key
+    print(f"🔑 Key Aktif: {GOOGLE_API_KEY[:5]}...{GOOGLE_API_KEY[-5:]}")
+else:
+    print("❌ Key KOSONG/TIDAK TERBACA")
 
 # ==========================================
 # FITUR: AUTO UPDATE YT-DLP
@@ -188,3 +193,4 @@ if __name__ == '__main__':
     
     # Host 0.0.0.0 Wajib untuk Railway
     app.run(host='0.0.0.0', port=port)
+
