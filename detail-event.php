@@ -294,7 +294,8 @@ $list_event = [
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             name: inputNama,
-                            mission: judulMisi
+                            mission: judulMisi,
+                            video_hash: data.video_hash
                         })
                     });
 
@@ -350,4 +351,5 @@ $list_event = [
     </script>
 </body>
 </html>
+
 
