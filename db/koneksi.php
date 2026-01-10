@@ -27,6 +27,3 @@ if (!$conn) {
     // Hentikan proses seketika
     exit;
 }
-
-// PENTING: JANGAN PAKAI TAG PENUTUP (?>) DI SINI
-// Biarkan terbuka agar tidak ada spasi yang tidak sengaja tercetak.
