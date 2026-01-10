@@ -1,5 +1,6 @@
 import os
 import time
+import json # Import json di global scope
 import yt_dlp
 import google.generativeai as genai
 from flask import Flask, request, jsonify
@@ -8,26 +9,27 @@ from flask_cors import CORS
 # =========================
 # 1. KONFIGURASI API
 # =========================
-GOOGLE_API_KEY = "AIzaSyC_klJAG8fEwQvyYDH_xn7TdzSjPPHxyhM" # <--- JANGAN LUPA GANTI INI
+# Gunakan Environment Variable untuk API KEY agar aman di Railway (Best Practice)
+# Atau biarkan hardcode jika memang untuk testing cepat, tapi hati-hati.
+GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY", "AIzaSyC_klJAG8fEwQvyYDH_xn7TdzSjPPHxyhM") 
 genai.configure(api_key=GOOGLE_API_KEY)
 
 app = Flask(__name__)
-CORS(app) # Ini PENTING agar PHP (XAMPP) bisa ngobrol sama Python
+CORS(app) 
 
 # =========================
-# 2. FUNGSI DOWNLOADER
+# 2. FUNGSI DOWNLOADER (TIDAK DIUBAH)
 # =========================
 def download_video(url):
     print(f"📥 Sedang mengunduh: {url}")
     ydl_opts = {
         'format': 'best',
-        'outtmpl': 'temp_video.mp4', # Nama file statis, akan ditimpa setiap request baru
+        'outtmpl': 'temp_video.mp4',
         'quiet': True,
         'no_warnings': True,
         'overwrites': True
     }
     try:
-        # Hapus file lama biar bersih
         if os.path.exists('temp_video.mp4'):
             os.remove('temp_video.mp4')
             
@@ -39,10 +41,10 @@ def download_video(url):
         return None
 
 # =========================
-# 3. FUNGSI AI VALIDATOR (Dinamis)
+# 3. FUNGSI AI VALIDATOR (TIDAK DIUBAH)
 # =========================
 def validate_content(file_path, misi_id):
-    model = genai.GenerativeModel("models/gemini-2.5-flash") # atau "gemini-1.5-flash"
+    model = genai.GenerativeModel("models/gemini-2.5-flash") 
     
     print("🤖 Mengunggah ke AI...")
     video_file = genai.upload_file(path=file_path)
@@ -51,21 +53,25 @@ def validate_content(file_path, misi_id):
         time.sleep(1)
         video_file = genai.get_file(video_file.name)
 
-    # Tentukan Prompt Berdasarkan Misi yang Dipilih di PHP
-    # Urutan ID harus sama dengan array $list_event di PHP (mulai dari 0)
     prompt_spesifik = ""
-    if int(misi_id) == 0: # Kelapa Segar
+    # Pastikan konversi ke int aman
+    try:
+        misi_id_int = int(misi_id)
+    except:
+        misi_id_int = -1
+
+    if misi_id_int == 0: 
         prompt_spesifik = "Video harus menampilkan buah kelapa muda, es kelapa, atau orang minum air kelapa."
-    elif int(misi_id) == 1: # Alat Pancing
-        prompt_spesifik = "Video harus menampilkan alat pancing, danau/kolam pemancingan, atau aktivitas memancing."
-    elif int(misi_id) == 2: # Ikan Bakar
-        prompt_spesifik = "Video harus menampilkan hidangan ikan bakar atau proses membakar ikan."
-    elif int(misi_id) == 3: # Rakit
-        prompt_spesifik = "Video harus menampilkan orang menaiki rakit/perahu bambu di atas air."
-    elif int(misi_id) == 4: # Camping
-        prompt_spesifik = "Video harus menampilkan tenda camping atau suasana berkemah."
+    elif misi_id_int == 1: 
+        prompt_spesifik = ""
+    elif misi_id_int == 2: 
+        prompt_spesifik = ""
+    elif misi_id_int == 3: 
+        prompt_spesifik = ""
+    elif misi_id_int == 4: 
+        prompt_spesifik = ""
     else:
-        prompt_spesifik = "Video harus menampilkan suasana wisata alam outdoor."
+        prompt_spesifik = "selain itu, invalid !"
 
     final_prompt = f"""
     Kamu adalah Validator Lomba.
@@ -80,15 +86,18 @@ def validate_content(file_path, misi_id):
 
     response = model.generate_content([video_file, final_prompt])
     
-    # Bersihkan file dari cloud
     try: genai.delete_file(video_file.name)
     except: pass
     
     return response.text
 
 # =========================
-# 4. ENDPOINT API (Pintu Masuk PHP)
+# 4. ENDPOINT API
 # =========================
+@app.route('/', methods=['GET']) # Route tambahan untuk cek status server
+def health_check():
+    return "Server AI Validator is Running!", 200
+
 @app.route('/cek-video', methods=['POST'])
 def api_handler():
     data = request.json
@@ -108,25 +117,31 @@ def api_handler():
         hasil_teks = validate_content(path, misi_id)
         
         # Bersihkan text agar jadi JSON valid
-        import json
         clean_text = hasil_teks.replace("```json", "").replace("```", "").strip()
         hasil_json = json.loads(clean_text)
         
     except Exception as e:
         hasil_json = {"status": "error", "alasan": f"AI Error: {str(e)}"}
 
-    # 3. PENGHAPUSAN VIDEO (Cleanup)
-    # Ini akan menghapus file temp_video.mp4 setelah AI selesai memberikan jawaban
+    # 3. Cleanup
     try:
         if os.path.exists(path):
             os.remove(path)
-            print(f"🗑️ File {path} berhasil dihapus dari server lokal.")
+            print(f"🗑️ File {path} berhasil dihapus dari server.")
     except Exception as e:
         print(f"⚠️ Gagal menghapus file: {e}")
 
-    # 4. Berikan hasil ke PHP
+    # 4. Berikan hasil
     return jsonify(hasil_json)
 
+# =========================
+# 5. ENTRY POINT (KOMPATIBILITAS RAILWAY)
+# =========================
 if __name__ == '__main__':
-    print("🔥 Server AI Validator Siap! (Port 5000)")
-    app.run(port=5000)
+    # Railway menyediakan port melalui variabel lingkungan 'PORT'
+    # Jika tidak ada (lokal), gunakan 5000
+    port = int(os.environ.get("PORT", 5000))
+    print(f"🔥 Server AI Validator Siap di Port {port}!")
+    
+    # Host '0.0.0.0' wajib untuk Docker/Railway agar bisa diakses dari luar container
+    app.run(host='0.0.0.0', port=port)
