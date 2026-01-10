@@ -11,9 +11,12 @@ from flask_cors import CORS
 # =========================
 # Gunakan Environment Variable untuk API KEY agar aman di Railway (Best Practice)
 # Atau biarkan hardcode jika memang untuk testing cepat, tapi hati-hati.
-GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY", "AIzaSyC_klJAG8fEwQvyYDH_xn7TdzSjPPHxyhM") 
-genai.configure(api_key=GOOGLE_API_KEY)
+GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
 
+if not GOOGLE_API_KEY:
+    print("❌ Error: GOOGLE_API_KEY belum disetting!")
+else:
+    genai.configure(api_key=GOOGLE_API_KEY)
 app = Flask(__name__)
 CORS(app) 
 
@@ -145,3 +148,4 @@ if __name__ == '__main__':
     
     # Host '0.0.0.0' wajib untuk Docker/Railway agar bisa diakses dari luar container
     app.run(host='0.0.0.0', port=port)
+
