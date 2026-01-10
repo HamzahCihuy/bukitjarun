@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -255,7 +256,10 @@ $list_event = [
                 // 1. CEK KONEKSI KE PYTHON (AI)
                 // ==========================================
                 console.log("Mengubungi Python...");
-                const response = await fetch('https://bukitjarun.up.railway.app/cek-video', { 
+                
+                // ⚠️ PENTING: GANTI DOMAIN DI BAWAH INI DENGAN DOMAIN BARU KAMU! ⚠️
+                // Contoh: https://backend-ai-kamu.up.railway.app/cek-video
+                const response = await fetch('https://my-ai-api-production-a4c4.up.railway.app/', { 
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -321,6 +325,9 @@ $list_event = [
                     divForm.classList.add('hidden');
                     divFail.classList.remove('hidden');
                     textFail.innerText = data.alasan || "Video tidak memenuhi kriteria.";
+                    
+                    btnVerifikasi.disabled = false;
+                    btnVerifikasi.classList.remove('opacity-50', 'cursor-not-allowed');
                 }
 
             } catch (error) {
