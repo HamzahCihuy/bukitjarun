@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -329,5 +328,4 @@ $list_event = [
         }
     </script>
 </body>
-
 </html>
