@@ -232,7 +232,7 @@ $list_event = [
             }
         };
 
-async function verifikasiVideo(index) {
+        async function verifikasiVideo(index) {
             const inputNama = document.getElementById('nama-' + index).value;
             const inputLink = document.getElementById('link-' + index).value;
             const btnVerifikasi = document.querySelector(`#form-claim-${index} button`);
@@ -265,15 +265,13 @@ async function verifikasiVideo(index) {
                     })
                 });
 
-                // --- DEBUG PYTHON ---
-                const textPython = await response.text(); // Ambil sebagai teks dulu
+                const textPython = await response.text(); 
                 console.log("Respon Python:", textPython); 
 
                 let data;
                 try {
-                    data = JSON.parse(textPython); // Coba ubah ke JSON
+                    data = JSON.parse(textPython); 
                 } catch (e) {
-                    // JIKA ERROR DI SINI -> BERARTI PYTHON YANG MENGIRIM HTML
                     throw new Error("SERVER AI ERROR (Bukan JSON):\n" + textPython.substring(0, 150));
                 }
 
@@ -296,15 +294,13 @@ async function verifikasiVideo(index) {
                         })
                     });
 
-                    // --- DEBUG PHP ---
-                    const saveText = await saveResponse.text(); // Ambil sebagai teks dulu
+                    const saveText = await saveResponse.text();
                     console.log("Respon PHP:", saveText);
 
                     let saveResult;
                     try {
-                        saveResult = JSON.parse(saveText); // Coba ubah ke JSON
+                        saveResult = JSON.parse(saveText); 
                     } catch (e) {
-                         // JIKA ERROR DI SINI -> BERARTI FILE PHP TIDAK KETEMU / ERROR
                         throw new Error("DATABASE ERROR (Isi HTML):\n" + saveText.substring(0, 150));
                     }
 
@@ -321,7 +317,6 @@ async function verifikasiVideo(index) {
                     }
 
                 } else {
-                    // Video Invalid
                     loadingIcon.classList.add('hidden');
                     divForm.classList.add('hidden');
                     divFail.classList.remove('hidden');
@@ -330,82 +325,8 @@ async function verifikasiVideo(index) {
 
             } catch (error) {
                 console.error("Error Full:", error);
-                // Tampilkan Alert Pesan Error Aslinya
                 alert("Terjadi Kesalahan:\n" + error.message);
                 
-                btnVerifikasi.disabled = false;
-                btnVerifikasi.classList.remove('opacity-50', 'cursor-not-allowed');
-                loadingIcon.classList.add('hidden');
-            }
-        }
-
-            btnVerifikasi.disabled = true;
-            btnVerifikasi.classList.add('opacity-50', 'cursor-not-allowed');
-            loadingIcon.classList.remove('hidden');
-
-            try {
-                // 1. CEK VIDEO KE PYTHON
-                // ✅ KODE YANG BENAR
-            const response = await fetch('https://bukitjarun.up.railway.app/cek-video', { 
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-            url: inputLink,
-            misi_id: index,
-            nama: inputNama
-                })
-            });
-                
-
-                if (!response.ok) throw new Error("Gagal terhubung ke Python (Pastikan api.py jalan)");
-                const data = await response.json();
-
-                if (data.status === "VALID") {
-                    
-                    // 2. JIKA VALID, SIMPAN KE DATABASE (PHP)
-                    const judulMisi = document.querySelector(`#modal-${index} h2`).innerText;
-
-                    const saveResponse = await fetch('api-save-ticket.php', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            name: inputNama,
-                            mission: judulMisi
-                        })
-                    });
-
-                    if (saveResponse.status === 404) throw new Error("File api-save-ticket.php tidak ditemukan!");
-                    
-                    const saveText = await saveResponse.text();
-                    let saveResult;
-                    try {
-                        saveResult = JSON.parse(saveText);
-                    } catch (e) {
-                        throw new Error("Respon Database Error (Bukan JSON): " + saveText);
-                    }
-
-                    if(saveResult.status === 'success') {
-                        const urlParams = new URLSearchParams({
-                            code: saveResult.generated_code, 
-                            name: inputNama,
-                            mission: judulMisi
-                        }).toString();
-                        
-                        window.location.href = 'detail-voucher.php?' + urlParams;
-                    } else {
-                        throw new Error("Gagal Simpan DB: " + saveResult.msg);
-                    }
-
-                } else {
-                    loadingIcon.classList.add('hidden');
-                    divForm.classList.add('hidden');
-                    divFail.classList.remove('hidden');
-                    textFail.innerText = data.alasan || "Video tidak memenuhi kriteria.";
-                }
-
-            } catch (error) {
-                console.error("Error Full:", error);
-                alert("Terjadi Kesalahan: " + error.message);
                 btnVerifikasi.disabled = false;
                 btnVerifikasi.classList.remove('opacity-50', 'cursor-not-allowed');
                 loadingIcon.classList.add('hidden');
@@ -422,4 +343,3 @@ async function verifikasiVideo(index) {
     </script>
 </body>
 </html>
-
