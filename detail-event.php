@@ -259,7 +259,7 @@ $list_event = [
                 
                 // ⚠️ PENTING: GANTI DOMAIN DI BAWAH INI DENGAN DOMAIN BARU KAMU! ⚠️
                 // Contoh: https://backend-ai-kamu.up.railway.app/cek-video
-                const response = await fetch('https://my-ai-api-production-a4c4.up.railway.app/', { 
+                const response = await fetch('https://my-ai-api-production-a4c4.up.railway.app/cek-video', { 
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -350,3 +350,4 @@ $list_event = [
     </script>
 </body>
 </html>
+
