@@ -266,6 +266,7 @@ $list_event = [
                         url: inputLink,
                         misi_id: index,
                         nama: inputNama
+                        
                     })
                 });
 
@@ -295,7 +296,8 @@ $list_event = [
                         body: JSON.stringify({
                             name: inputNama,
                             mission: judulMisi,
-                            video_hash: data.video_hash
+                            video_hash: data.video_hash,
+                            link: inputLink
                         })
                     });
 
@@ -351,5 +353,6 @@ $list_event = [
     </script>
 </body>
 </html>
+
 
 
