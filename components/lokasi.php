@@ -1,5 +1,5 @@
 <?php
-include './db/koneksi.php';
+include '../db/koneksi.php';
 
 // Fungsi Helper: Untuk mengambil data setting spesifik
 // Jika data tidak ditemukan di database, akan menampilkan teks default (fallback)
@@ -141,3 +141,4 @@ $link_embed = getSetting($pdo, 'lokasi_maps_embed', ''); // Link iframe
 </section>
 
 <?php include 'components/wave-white-top.php'; ?>
+
