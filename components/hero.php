@@ -1,9 +1,19 @@
 <?php
-// 1. Ambil data gambar dari database
-// Asumsi $pdo sudah tersedia dari file induk (index.php)
-include __DIR__ . '/../db/koneksi.php';
+// 1. INCLUDE KONEKSI YANG AMAN (Menggunakan __DIR__)
+// __DIR__ = folder 'components'
+// /../    = mundur ke 'root'
+// /db/    = masuk folder 'db'
+include_once __DIR__ . '/../db/koneksi.php';
+
+// 2. CEK APAKAH VARIABEL $pdo ADA?
+// Kadang di file koneksi namanya $conn, kita ubah jadi $pdo biar kodingan jalan
+if (!isset($pdo) && isset($conn)) {
+    $pdo = $conn;
+}
+
+// Jika masih tidak ada, matikan proses dan beri pesan error jelas
 if (!isset($pdo)) {
-    die("Koneksi Database Gagal dimuat di hero.php");
+    die("Error: File koneksi.php berhasil dipanggil, tapi variabel <b>\$pdo</b> tidak ditemukan. Cek isi file db/koneksi.php pastikan variabelnya bernama \$pdo atau \$conn.");
 }
 $stmt = $pdo->query("SELECT image FROM hero_slides WHERE is_active = 1 ORDER BY urutan ASC");
 $slides = $stmt->fetchAll(PDO::FETCH_COLUMN); // Mengambil array 1 dimensi langsung: ['img1.jpg', 'img2.jpg']
@@ -139,6 +149,7 @@ if (empty($slides)) {
     document.addEventListener('DOMContentLoaded', initSlider);
 
 </script>
+
 
 
 
