@@ -43,7 +43,7 @@
 
 <?php
 // 1. KONEKSI DATABASE
-include 'koneksi.php';
+include './db/koneksi.php';
 
 // 2. AMBIL DATA DARI TABEL EVENTS
 // Diurutkan berdasarkan kolom 'urutan' agar kita bisa atur posisi di CMS
@@ -262,3 +262,4 @@ $list_event = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
 </script>
+
