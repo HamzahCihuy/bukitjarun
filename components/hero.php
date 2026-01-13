@@ -1,8 +1,20 @@
+<?php
+// 1. Ambil data gambar dari database
+// Asumsi $pdo sudah tersedia dari file induk (index.php)
+$stmt = $pdo->query("SELECT image FROM hero_slides WHERE is_active = 1 ORDER BY urutan ASC");
+$slides = $stmt->fetchAll(PDO::FETCH_COLUMN); // Mengambil array 1 dimensi langsung: ['img1.jpg', 'img2.jpg']
+
+// Jika tidak ada data, pakai gambar default agar tidak error
+if (empty($slides)) {
+    $slides = ['default-hero.jpg'];
+}
+?>
+
 <section class="relative overflow-hidden">
     <div
         id="carouselContent"
-        class="relative bg-cover bg-center pt-40 pb-40 transition-all duration-700"
-        style="min-height:550px;"
+        class="relative bg-cover bg-center pt-40 pb-40 transition-all duration-700 ease-in-out"
+        style="min-height: 600px; background-image: url('assets/images/<?= $slides[0] ?>');"
     >
         <img
             src="assets/svg/top.svg"
@@ -10,37 +22,18 @@
             alt="wave top"
         >
 
-        <button onclick="prevSlide()"
-            class="absolute left-4 top-1/2 -translate-y-1/2 bg-[#17FFB2]/80 hover:bg-[#17FFB2] text-white px-3 py-6 rounded-full z-40 transition-colors">
-            <i class="fas fa-chevron-left"></i>
+        <button onclick="changeSlide(-1)"
+            class="absolute left-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-[#17FFB2] hover:text-black text-white px-4 py-4 rounded-full z-40 transition-all backdrop-blur-sm border border-white/20 group">
+            <i class="fas fa-chevron-left group-hover:scale-125 transition-transform"></i>
         </button>
 
-        <button onclick="nextSlide()"
-            class="absolute right-4 top-1/2 -translate-y-1/2 bg-[#17FFB2]/80 hover:bg-[#17FFB2] text-white px-3 py-6 rounded-full z-40 transition-colors">
-            <i class="fas fa-chevron-right"></i>
+        <button onclick="changeSlide(1)"
+            class="absolute right-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-[#17FFB2] hover:text-black text-white px-4 py-4 rounded-full z-40 transition-all backdrop-blur-sm border border-white/20 group">
+            <i class="fas fa-chevron-right group-hover:scale-125 transition-transform"></i>
         </button>
 
-        <div class="container mx-24 px-6 md:px-12 relative z-30 text-white">
-            <div class="max-w-2xl text-left mt-10 md:mt-0">
-                <p id="slidePromo" class="text-lg md:text-xl font-bold italic text-yellow-400 mb-1 uppercase tracking-wider"></p>
-                <h2 id="slideTitle" class="text-5xl md:text-7xl font-black leading-tight drop-shadow-lg"></h2>
-                <div class="flex items-center gap-3 mt-4">
-                    <span id="slideBadge" class="px-3 py-1 text-sm font-bold uppercase tracking-tighter"></span>
-                    <span id="slideSubtitle" class=""></span>
-                </div>
-                <div class="mt-8">
-                    <p class="text-sm opacity-70 uppercase tracking-widest" style="opacity:0;"></p>
-                    <p class="text-4xl md:text-6xl font-black flex items-start">
-                        <span class="text-xl mt-2 mr-1"></span>
-                        <span id="slidePrice"></span>
-                    </p>
-                    <p id="slideDates" class="mt-4 inline-block backdrop-blur-sm px-4 py-1 rounded-sm text-sm italic"></p>
-                </div>
+        <div id="dotContainer" class="absolute bottom-16 left-1/2 -translate-x-1/2 z-30 flex gap-3">
             </div>
-        </div>
-
-        <div id="dotContainer" class="absolute bottom-16 left-1/2 -translate-x-1/2 z-30 flex gap-2">
-        </div>
 
         <svg 
             class="absolute bottom-0 left-0 w-full z-20 pointer-events-none h-auto" 
@@ -62,3 +55,83 @@
 
     </div>
 </section>
+
+<script>
+    // 1. Ambil data nama file gambar dari PHP
+    const images = <?= json_encode($slides) ?>;
+    const pathPrefix = 'assets/images/'; // Sesuaikan dengan folder tempat kamu simpan gambar
+    
+    let currentIndex = 0;
+    const carouselContent = document.getElementById('carouselContent');
+    const dotContainer = document.getElementById('dotContainer');
+    let slideInterval;
+
+    // 2. Fungsi inisialisasi awal
+    function initSlider() {
+        // Buat Dots indikator sesuai jumlah gambar
+        images.forEach((_, index) => {
+            const dot = document.createElement('button');
+            dot.className = `w-3 h-3 rounded-full transition-all duration-300 ${index === 0 ? 'bg-[#17FFB2] w-8' : 'bg-white/50 hover:bg-white'}`;
+            dot.onclick = () => goToSlide(index);
+            dotContainer.appendChild(dot);
+        });
+
+        startAutoSlide();
+    }
+
+    // 3. Fungsi Ganti Slide
+    function showSlide(index) {
+        // Handle index looping (kalau habis kembali ke awal)
+        if (index >= images.length) currentIndex = 0;
+        else if (index < 0) currentIndex = images.length - 1;
+        else currentIndex = index;
+
+        // Ganti Background Image
+        // Menggunakan teknik preload image agar tidak kedip
+        const imgUrl = pathPrefix + images[currentIndex];
+        const tempImg = new Image();
+        tempImg.src = imgUrl;
+        tempImg.onload = () => {
+            carouselContent.style.backgroundImage = `url('${imgUrl}')`;
+        };
+
+        // Update Dots Active State
+        const dots = dotContainer.children;
+        for (let i = 0; i < dots.length; i++) {
+            if (i === currentIndex) {
+                dots[i].className = 'w-3 h-3 rounded-full transition-all duration-300 bg-[#17FFB2] w-8';
+            } else {
+                dots[i].className = 'w-3 h-3 rounded-full transition-all duration-300 bg-white/50 hover:bg-white';
+            }
+        }
+    }
+
+    // 4. Navigasi Tombol
+    function changeSlide(direction) {
+        stopAutoSlide(); // Stop timer kalau user klik manual
+        showSlide(currentIndex + direction);
+        startAutoSlide(); // Jalanin lagi timernya
+    }
+
+    // 5. Navigasi Dot
+    function goToSlide(index) {
+        stopAutoSlide();
+        showSlide(index);
+        startAutoSlide();
+    }
+
+    // 6. Auto Slide (Otomatis ganti tiap 5 detik)
+    function startAutoSlide() {
+        slideInterval = setInterval(() => {
+            showSlide(currentIndex + 1);
+        }, 5000); // 5000ms = 5 detik
+    }
+
+    function stopAutoSlide() {
+        clearInterval(slideInterval);
+    }
+
+    // Jalankan saat halaman siap
+    document.addEventListener('DOMContentLoaded', initSlider);
+
+</script>
