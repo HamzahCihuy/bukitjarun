@@ -1,4 +1,5 @@
 <?php
+include 'db/koneksi.php';
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 ?>
@@ -134,4 +135,5 @@ error_reporting(E_ALL);
     <script src="assets/js/navbar.js"></script>
 
 </body>
+
 </html>
