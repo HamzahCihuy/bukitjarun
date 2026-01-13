@@ -1,29 +1,28 @@
 <?php
-// Ambil variabel dari Environment Railway
+// 1. Ambil variabel dari Environment Railway (TETAP SAMA)
 $host = getenv('MYSQLHOST');
 $user = getenv('MYSQLUSER');
 $pass = getenv('MYSQLPASSWORD');
 $db   = getenv('MYSQLDATABASE');
 $port = getenv('MYSQLPORT');
 
-// Matikan laporan error HTML default PHP agar tidak merusak JSON
-mysqli_report(MYSQLI_REPORT_OFF);
+try {
+    // 2. BUAT KONEKSI MENGGUNAKAN PDO (Ganti logic mysqli di sini)
+    // DSN (Data Source Name) formatnya: mysql:host=...;port=...;dbname=...
+    $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4";
 
-// Coba Konek
-// Gunakan @ di depan mysqli_connect untuk meredam error warning PHP
-$conn = @mysqli_connect($host, $user, $pass, $db, $port);
+    $pdo = new PDO($dsn, $user, $pass);
 
-// Jika Gagal...
-if (!$conn) {
-    // Pastikan header JSON terkirim
-    header('Content-Type: application/json');
-    
-    // Kirim pesan error dalam format JSON
-    echo json_encode([
-        "status" => "error", 
-        "msg" => "Koneksi Database Gagal: " . mysqli_connect_error()
-    ]);
-    
-    // Hentikan proses seketika
-    exit;
+    // 3. Set Error Mode ke Exception (Agar gampang mendeteksi error query)
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    // 4. (Opsional) Buat alias $conn = $pdo 
+    // Ini trik agar jika ada kode lama yang pakai variabel $conn, tetap jalan.
+    $conn = $pdo;
+
+} catch (PDOException $e) {
+    // Jika koneksi gagal, tampilkan pesan error
+    // Header JSON dihapus karena ini dipakai untuk halaman HTML (Landing Page)
+    die("Koneksi Database Gagal: " . $e->getMessage());
 }
+?>
