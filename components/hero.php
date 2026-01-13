@@ -15,12 +15,15 @@ if (!isset($pdo) && isset($conn)) {
 if (!isset($pdo)) {
     die("Error: File koneksi.php berhasil dipanggil, tapi variabel <b>\$pdo</b> tidak ditemukan. Cek isi file db/koneksi.php pastikan variabelnya bernama \$pdo atau \$conn.");
 }
-$stmt = $pdo->query("SELECT image FROM hero_slides WHERE is_active = 1 ORDER BY urutan ASC");
-$slides = $stmt->fetchAll(PDO::FETCH_COLUMN); // Mengambil array 1 dimensi langsung: ['img1.jpg', 'img2.jpg']
 
-// Jika tidak ada data, pakai gambar default agar tidak error
+// 3. KODINGAN HERO (Query Database)
+// Mengambil gambar dari tabel hero_slides
+$stmt = $pdo->query("SELECT image FROM hero_slides WHERE is_active = 1 ORDER BY urutan ASC");
+$slides = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+// Fallback: Jika tidak ada data di database, pakai gambar default ini
 if (empty($slides)) {
-    $slides = ['default-hero.jpg'];
+    $slides = ['default_banner.jpg']; // Pastikan file ini ada di assets/images/ kamu
 }
 ?>
 
@@ -28,7 +31,7 @@ if (empty($slides)) {
     <div
         id="carouselContent"
         class="relative bg-cover bg-center pt-40 pb-40 transition-all duration-700 ease-in-out"
-        style="min-height: 600px; background-image: url('assets/images/<?= $slides[0] ?>');"
+        style="min-height: 600px; background-image: url('assets/images/<?= htmlspecialchars($slides[0]) ?>');"
     >
         <img
             src="assets/svg/top.svg"
@@ -46,8 +49,7 @@ if (empty($slides)) {
             <i class="fas fa-chevron-right group-hover:scale-125 transition-transform"></i>
         </button>
 
-        <div id="dotContainer" class="absolute bottom-16 left-1/2 -translate-x-1/2 z-30 flex gap-3">
-            </div>
+        <div id="dotContainer" class="absolute bottom-16 left-1/2 -translate-x-1/2 z-30 flex gap-3"></div>
 
         <svg 
             class="absolute bottom-0 left-0 w-full z-20 pointer-events-none h-auto" 
@@ -71,18 +73,18 @@ if (empty($slides)) {
 </section>
 
 <script>
-    // 1. Ambil data nama file gambar dari PHP
+    // Ambil data gambar dari PHP ke JS
     const images = <?= json_encode($slides) ?>;
-    const pathPrefix = 'assets/images/'; // Sesuaikan dengan folder tempat kamu simpan gambar
+    const pathPrefix = 'assets/images/'; // Sesuaikan jika folder gambar beda
     
     let currentIndex = 0;
     const carouselContent = document.getElementById('carouselContent');
     const dotContainer = document.getElementById('dotContainer');
     let slideInterval;
 
-    // 2. Fungsi inisialisasi awal
     function initSlider() {
-        // Buat Dots indikator sesuai jumlah gambar
+        dotContainer.innerHTML = ''; // Reset dots
+        
         images.forEach((_, index) => {
             const dot = document.createElement('button');
             dot.className = `w-3 h-3 rounded-full transition-all duration-300 ${index === 0 ? 'bg-[#17FFB2] w-8' : 'bg-white/50 hover:bg-white'}`;
@@ -93,64 +95,54 @@ if (empty($slides)) {
         startAutoSlide();
     }
 
-    // 3. Fungsi Ganti Slide
     function showSlide(index) {
-        // Handle index looping (kalau habis kembali ke awal)
         if (index >= images.length) currentIndex = 0;
         else if (index < 0) currentIndex = images.length - 1;
         else currentIndex = index;
 
-        // Ganti Background Image
-        // Menggunakan teknik preload image agar tidak kedip
         const imgUrl = pathPrefix + images[currentIndex];
+        
+        // Preload image agar transisi mulus
         const tempImg = new Image();
-        tempImg.src = imgUrl;
         tempImg.onload = () => {
-            carouselContent.style.backgroundImage = `url('${imgUrl}')`;
+             carouselContent.style.backgroundImage = `url('${imgUrl}')`;
         };
+        tempImg.src = imgUrl;
 
-        // Update Dots Active State
+        // Update Dots
         const dots = dotContainer.children;
-        for (let i = 0; i < dots.length; i++) {
-            if (i === currentIndex) {
-                dots[i].className = 'w-3 h-3 rounded-full transition-all duration-300 bg-[#17FFB2] w-8';
-            } else {
-                dots[i].className = 'w-3 h-3 rounded-full transition-all duration-300 bg-white/50 hover:bg-white';
+        if(dots.length > 0) {
+            for (let i = 0; i < dots.length; i++) {
+                if (i === currentIndex) {
+                    dots[i].className = 'w-3 h-3 rounded-full transition-all duration-300 bg-[#17FFB2] w-8';
+                } else {
+                    dots[i].className = 'w-3 h-3 rounded-full transition-all duration-300 bg-white/50 hover:bg-white';
+                }
             }
         }
     }
 
-    // 4. Navigasi Tombol
     function changeSlide(direction) {
-        stopAutoSlide(); // Stop timer kalau user klik manual
+        stopAutoSlide();
         showSlide(currentIndex + direction);
-        startAutoSlide(); // Jalanin lagi timernya
+        startAutoSlide();
     }
 
-    // 5. Navigasi Dot
     function goToSlide(index) {
         stopAutoSlide();
         showSlide(index);
         startAutoSlide();
     }
 
-    // 6. Auto Slide (Otomatis ganti tiap 5 detik)
     function startAutoSlide() {
         slideInterval = setInterval(() => {
             showSlide(currentIndex + 1);
-        }, 5000); // 5000ms = 5 detik
+        }, 5000); // Ganti gambar tiap 5 detik
     }
 
     function stopAutoSlide() {
         clearInterval(slideInterval);
     }
 
-    // Jalankan saat halaman siap
     document.addEventListener('DOMContentLoaded', initSlider);
-
 </script>
-
-
-
-
-
