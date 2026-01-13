@@ -1,7 +1,7 @@
 <?php
 // 1. Ambil data gambar dari database
 // Asumsi $pdo sudah tersedia dari file induk (index.php)
-include '../db/koneksi.php'; 
+include __DIR__ . '/../db/koneksi.php';
 
 $stmt = $pdo->query("SELECT image FROM hero_slides WHERE is_active = 1 ORDER BY urutan ASC");
 $slides = $stmt->fetchAll(PDO::FETCH_COLUMN); // Mengambil array 1 dimensi langsung: ['img1.jpg', 'img2.jpg']
@@ -137,5 +137,6 @@ if (empty($slides)) {
     document.addEventListener('DOMContentLoaded', initSlider);
 
 </script>
+
 
 
