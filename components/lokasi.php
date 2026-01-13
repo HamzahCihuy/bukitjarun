@@ -1,3 +1,24 @@
+<?php
+include './db/koneksi.php';
+
+// Fungsi Helper: Untuk mengambil data setting spesifik
+// Jika data tidak ditemukan di database, akan menampilkan teks default (fallback)
+function getSetting($pdo, $key, $default = '-') {
+    $stmt = $pdo->prepare("SELECT setting_value FROM page_settings WHERE setting_key = ?");
+    $stmt->execute([$key]);
+    $result = $stmt->fetchColumn();
+    return $result ? $result : $default;
+}
+
+// Ambil data ke variabel biar kodingan HTML di bawah lebih bersih
+$label      = getSetting($pdo, 'lokasi_label', 'Lokasi Kami');
+$judul_atas = getSetting($pdo, 'lokasi_judul_atas', 'YUK, OTW KE');
+$judul_bawah= getSetting($pdo, 'lokasi_judul_bawah', "BUKIT JAR'UN!");
+$deskripsi  = getSetting($pdo, 'lokasi_deskripsi', 'Deskripsi lokasi belum diisi.');
+$link_maps  = getSetting($pdo, 'lokasi_maps_link', '#');
+$link_embed = getSetting($pdo, 'lokasi_maps_embed', ''); // Link iframe
+?>
+
 <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
@@ -35,23 +56,26 @@
                 
                 <div class="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border border-green-100 mb-6 animate-pulse">
                     <span class="w-2 h-2 rounded-full bg-green-500"></span>
-                    <span class="text-xs font-bold text-[#0E5941] tracking-wider uppercase">Kab. Tasikmalaya, Pancatengah</span>
+                    <span class="text-xs font-bold text-[#0E5941] tracking-wider uppercase">
+                        <?= htmlspecialchars($label) ?>
+                    </span>
                 </div>
 
                 <h2 class="text-5xl md:text-6xl font-black text-[#1a4d2e] mb-4 font-marker leading-tight drop-shadow-sm">
-                    YUK, OTW KE <br>
-                    <span class="text-[#17FFB2] text-stroke-green">BUKIT JAR'UN!</span> 🗺️
+                    <?= htmlspecialchars($judul_atas) ?> <br>
+                    <span class="text-[#17FFB2] text-stroke-green"><?= htmlspecialchars($judul_bawah) ?></span> 🗺️
                 </h2>
 
                 <p class="text-slate-600 text-lg md:text-xl font-kalam mb-8 leading-relaxed">
-                    Wisata alam (tahap pengembangan) di <b>Kp. Jati Jaya, Desa Cikawung</b>. Menyuguhkan view Tebing & Sungai Letter S. <br>
-                    <span class="bg-yellow-100 text-yellow-800 px-1 font-bold">TIKET MASUK GRATIS (No Pungli)!</span> Nikmati Camping, Rakit, & Mancing sepuasnya.
+                    <?= $deskripsi ?>
                 </p>
+
                  <div class="mt-8 p-6 bg-[#064e3b] text-[#17FFB2] rounded-xl shadow-xl relative overflow-hidden transform rotate-1 border-2 border-white/20">
                     <div class="absolute -right-4 -top-8 text-9xl text-white/5 font-serif select-none">"</div>
                     <h3 class="font-black text-xl mb-1 tracking-wide">AKSES OFF-ROAD FRIENDLY!</h3>
                     <p class="text-sm text-green-100 font-medium">Lebih seru pakai motor/mobil tipe off-road untuk pengalaman maksimal.</p>
                 </div>
+
                 <div class="grid grid-cols-2 gap-4 mb-8">
                     <div class="bg-white p-4 rounded-xl shadow-sm border border-green-50 hover:shadow-md transition text-left group">
                         <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center text-xl mb-2 group-hover:scale-110 transition">🚗</div>
@@ -66,7 +90,7 @@
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                    <a href="https://goo.gl/maps/placeholder-link" target="_blank" class="flex items-center justify-center gap-3 px-8 py-4 bg-[#17FFB2] hover:bg-[#14532d] text-white font-bold rounded-xl shadow-lg shadow-green-900/20 transition transform hover:-translate-y-1">
+                    <a href="<?= htmlspecialchars($link_maps) ?>" target="_blank" class="flex items-center justify-center gap-3 px-8 py-4 bg-[#17FFB2] hover:bg-[#14532d] text-white font-bold rounded-xl shadow-lg shadow-green-900/20 transition transform hover:-translate-y-1">
                         <span>Buka Google Maps</span>
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                     </a>
@@ -83,7 +107,8 @@
 
                     <div class="relative w-full h-[350px] md:h-[450px] rounded-2xl overflow-hidden border border-slate-200">
                         <iframe 
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3953.9123059325693!2d108.321108275004!3d-7.692560292324721!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e65e91d7e3b3997%3A0xed6ebfd5410ae905!2sPuncak%20Jar'un%20Jati%20Jaya!5e0!3m2!1sid!2sid!4v1767943369741!5m2!1sid!2sid" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" 
+                            src="<?= htmlspecialchars($link_embed) ?>" 
+                            width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" 
                             width="100%" 
                             height="100%" 
                             style="border:0;" 
@@ -97,7 +122,7 @@
                         
                         <div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur px-4 py-2 rounded-lg shadow-lg flex items-center gap-2">
                             <span class="w-3 h-3 bg-green-500 rounded-full animate-ping"></span>
-                            <span class="text-sm font-bold text-slate-800">Bukit Jar'un</span>
+                            <span class="text-sm font-bold text-slate-800"><?= htmlspecialchars($judul_bawah) ?></span>
                         </div>
                     </div>
                 </div>
@@ -114,4 +139,5 @@
     </div>
     
 </section>
+
 <?php include 'components/wave-white-top.php'; ?>
