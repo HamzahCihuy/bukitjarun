@@ -42,55 +42,13 @@
 </style>
 
 <?php
-// DATA KONTEN
-// bg_pattern: Icon kecil untuk hiasan background (hitam putih lebih baik)
-$list_event = [
-    [
-        "title" => "Kelapa Segar Murni",
-        "reward_img" => "https://img.icons8.com/color/480/coconut.png",
-        "mission" => "Minimal posting 1 video konten apa saja di tempat wisata.",
-        "syarat" => ["Video bebas (suasana/selfie)", "Post Story IG/WA atau TikTok"],
-        "color" => "#4ade80", 
-        "accent" => "#16a34a",
-        "bg_pattern" => "https://img.icons8.com/ios-filled/50/ffffff/palm-tree.png" // Icon Pohon Kelapa Putih
-    ],
-    [
-        "title" => "Pinjam Alat Pancing",
-        "reward_img" => "https://img.icons8.com/color/480/fishing-pole.png",
-        "mission" => "Posting 2 konten membahas mengenai tempat wisata ini.",
-        "syarat" => ["Membahas fasilitas/suasana", "Durasi min. 15 detik"],
-        "color" => "#60a5fa", 
-        "accent" => "#2563eb",
-        "bg_pattern" => "https://img.icons8.com/?size=100&id=0d5mQ2thKvhd&format=png&color=000000" // Icon Kail Pancing
-    ],
-    [
-        "title" => "Ikan Bakar",
-        "reward_img" => "https://img.icons8.com/?size=100&id=lGtVJMyaXXTi&format=png&color=000000",
-        "mission" => "Posting 2 konten fokus promosi Wisata Jar'un.",
-        "syarat" => ["Minta naskah ke panitia", "Review makanan/view utama"],
-        "color" => " #facc15", 
-        "accent" => "#ca8a04",
-        "bg_pattern" => "https://img.icons8.com/ios-filled/50/ffffff/fire-element.png" // Icon Api
-    ],
-    [
-        "title" => "Wisata Rakit",
-        "reward_img" => "https://img.icons8.com/?size=100&id=xOl7xdwhubRU&format=png&color=000000",
-        "mission" => "Posting satu konten sesuai ide dan naskah konten.",
-        "syarat" => ["Ikuti arahan gaya/script tim", "Video saat naik rakit"],
-        "color" => "#22d3ee", 
-        "accent" => "#0891b2",
-        "bg_pattern" => "https://img.icons8.com/ios-filled/50/ffffff/water-element.png" // Icon Ombak/Air
-    ],
-    [
-        "title" => "Alat Camping Lengkap",
-        "reward_img" => "https://img.icons8.com/fluency/480/camping-tent.png",
-        "mission" => "Membuat 5 konten dari 10 ide konten yang telah disediakan.",
-        "syarat" => ["Pilih 5 ide dari daftar", "Video kualitas jelas (HD)"],
-        "color" => "#fb923c", 
-        "accent" => "#ea580c",
-        "bg_pattern" => "https://img.icons8.com/?size=100&id=BJbmRepuYjbE&format=png&color=000000" // Icon Pohon Pinus
-    ]
-];
+// 1. KONEKSI DATABASE
+include 'koneksi.php';
+
+// 2. AMBIL DATA DARI TABEL EVENTS
+// Diurutkan berdasarkan kolom 'urutan' agar kita bisa atur posisi di CMS
+$stmt = $pdo->query("SELECT * FROM events ORDER BY urutan ASC");
+$list_event = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <section id="event-section" class="relative w-full py-16 px-4 overflow-hidden bg-[#17FFB2]">
@@ -148,15 +106,15 @@ $list_event = [
 </div>
 
         <div class="flex flex-col space-y-6">
-            <?php foreach($list_event as $index => $row): ?>
+            <?php foreach($list_event as $row): ?>
             
             <div class="accordion-item group relative" onclick="handleEventClick(this)">
                 
                 <div class="relative z-20 flex items-center h-16 md:h-20 rounded-full shadow-lg cursor-pointer transform transition-transform duration-300 hover:scale-[1.02] hover:shadow-xl border-b-4 overflow-hidden"
-                     style="background: linear-gradient(135deg, <?= $row['color'] ?>, <?= $row['accent'] ?>); border-color: <?= $row['accent'] ?>;">
+                     style="background: linear-gradient(135deg, <?= $row['color_primary'] ?>, <?= $row['color_accent'] ?>); border-color: <?= $row['color_accent'] ?>;">
                     
                     <div class="absolute inset-0 z-0 opacity-[0.15] pointer-events-none bg-pattern-animate"
-                         style="background-image: url('<?= $row['bg_pattern'] ?>'); 
+                         style="background-image: url('<?= $row['bg_pattern_img'] ?>'); 
                                 background-size: 30px; 
                                 background-repeat: space;">
                     </div>
@@ -180,7 +138,7 @@ $list_event = [
 
                 <div class="accordion-content relative z-10 w-[95%] mx-auto -mt-6">
                     <div class="bg-white border-x-2 border-b-2 rounded-b-3xl p-6 pt-10 shadow-sm"
-                         style="border-color: <?= $row['accent'] ?>;">
+                         style="border-color: <?= $row['color_accent'] ?>;">
                         
                         <div class="bg-slate-50 rounded-xl p-4 border border-slate-100 mb-3">
                             <h4 class="text-slate-800 font-bold text-sm uppercase mb-1">🎯 Misi Kamu:</h4>
@@ -192,24 +150,33 @@ $list_event = [
                         <div class="px-2">
                             <h4 class="text-xs text-slate-400 font-bold uppercase mb-2">Syarat & Ketentuan:</h4>
                             <ul class="space-y-2">
-                                <?php foreach($row['syarat'] as $syarat): ?>
+                                <?php 
+                                    // LOGIKA BARU:
+                                    // Karena di database 'syarat' disimpan sebagai 1 paragraf panjang
+                                    // Kita pecah berdasarkan tombol ENTER (Baris baru)
+                                    $syarat_items = explode(PHP_EOL, $row['syarat']); 
+                                ?>
+                                
+                                <?php foreach($syarat_items as $syarat): ?>
+                                    <?php if(trim($syarat) != ""): // Cek biar baris kosong tidak dicetak ?>
                                     <li class="flex items-start text-sm text-slate-600 font-medium">
-                                        <svg class="w-4 h-4 mr-2 mt-0.5" style="color: <?= $row['accent'] ?>;" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                        <svg class="w-4 h-4 mr-2 mt-0.5" style="color: <?= $row['color_accent'] ?>;" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
                                         <?= $syarat ?>
                                     </li>
+                                    <?php endif; ?>
                                 <?php endforeach; ?>
                             </ul>
                         </div>
 
                         <button class="mt-6 w-full text-white font-fun font-bold py-3 rounded-xl shadow-lg hover:opacity-90 transition-opacity"
-                                style="background: linear-gradient(to right, <?= $row['color'] ?>, <?= $row['accent'] ?>);">
+                                style="background: linear-gradient(to right, <?= $row['color_primary'] ?>, <?= $row['color_accent'] ?>);">
                             Ambil Tantangan
                         </button>
                     </div>
                 </div>
 
             </div>
-<?php endforeach; ?>
+            <?php endforeach; ?>
         </div> <div class="mt-20 pb-12 flex justify-center relative z-20">
     <div class="relative group cursor-pointer">
         
@@ -230,7 +197,7 @@ $list_event = [
                 <div class="flex flex-col items-start">
                     <span class="text-xs text-slate-400 font-bold uppercase tracking-widest leading-none mb-1 group-hover:text-yellow-300 transition-colors">Limited Slot</span>
                     <span class="text-2xl md:text-3xl font-black font-fun text-white tracking-wide leading-none group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-slate-300">
-                     IKUTI EVENT
+                      IKUTI EVENT
                     </span>
                 </div>
 
@@ -293,4 +260,5 @@ $list_event = [
             }, 300);
         }
     }
+
 </script>
