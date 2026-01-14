@@ -116,6 +116,7 @@ error_reporting(E_ALL);
     <?php include __DIR__ . '/components/navbar.php'; ?>
     <?php include __DIR__ . '/components/hero.php'; ?>
     <?php include __DIR__ . '/components/event.php'; ?>
+    <?php include __DIR__ . '/components/leaderboard.php'; ?>
     <?php include __DIR__ . '/components/pengenalan1.php'; ?>
     <?php include __DIR__ . '/components/pengenalan2.php'; ?>
     <?php include __DIR__ . '/components/lokasi.php'; ?>
@@ -137,4 +138,5 @@ error_reporting(E_ALL);
 </body>
 
 </html>
+
 
