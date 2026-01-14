@@ -20,26 +20,13 @@ $colors = [
 <style>
     .font-hand { font-family: 'Patrick Hand', cursive; }
     
-    /* Scrollbar Horizontal yang Cantik */
-    .horizontal-scroll::-webkit-scrollbar {
-        height: 12px; /* Tinggi scrollbar horizontal */
-    }
-    .horizontal-scroll::-webkit-scrollbar-track {
-        background: rgba(0,0,0,0.05);
-        border-radius: 20px;
-        margin: 0 20px;
-    }
-    .horizontal-scroll::-webkit-scrollbar-thumb {
-        background: #cbd5e1; 
-        border-radius: 20px;
-        border: 3px solid transparent;
-        background-clip: content-box;
-    }
-    .horizontal-scroll::-webkit-scrollbar-thumb:hover {
-        background-color: #94a3b8;
-    }
+    /* Scrollbar Horizontal Custom */
+    .horizontal-scroll::-webkit-scrollbar { height: 12px; }
+    .horizontal-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 20px; margin: 0 20px; }
+    .horizontal-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 20px; border: 3px solid transparent; background-clip: content-box; }
+    .horizontal-scroll::-webkit-scrollbar-thumb:hover { background-color: #94a3b8; }
 
-    /* Scrollbar Pesan (Vertikal Tipis) */
+    /* Scrollbar Text Vertikal (Tipis) */
     .pesan-scroll::-webkit-scrollbar { width: 4px; }
     .pesan-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
     .pesan-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 10px; }
@@ -61,7 +48,7 @@ $colors = [
                 MENFESS <span class="text-pink-500">JAR'UN</span>
             </h2>
             <p class="text-slate-500 text-lg">
-                Geser ke kanan untuk melihat curhatan netizen! 👉
+                Geser ke kanan untuk melihat curhatan lainnya! 👉
             </p>
         </div>
 
@@ -106,23 +93,23 @@ $colors = [
 
             <div class="w-full min-w-0">
                 
-                <div id="menfess-wall" class="flex gap-6 overflow-x-auto py-10 px-4 horizontal-scroll snap-x snap-mandatory">
+                <div id="menfess-wall" class="flex flex-col flex-wrap content-start gap-6 overflow-x-auto py-8 px-4 horizontal-scroll h-[500px] md:h-[600px]">
                     
                     <?php if(empty($list_menfess)): ?>
-                        <div class="bg-white p-10 rounded-2xl border-2 border-dashed border-slate-300 text-center w-full shrink-0">
+                        <div class="bg-white p-10 rounded-2xl border-2 border-dashed border-slate-300 text-center w-full md:w-[320px]">
                             <p class="text-slate-400 font-bold">Belum ada curhatan. Jadilah yang pertama!</p>
                         </div>
                     <?php endif; ?>
 
                     <?php foreach($list_menfess as $row): $rot = rand(-2, 2); ?>
                     
-                    <div class="relative group hover:z-50 transition-all duration-300 w-[280px] md:w-[320px] flex-shrink-0 snap-center" 
+                    <div class="relative group hover:z-50 transition-all duration-300 w-[280px] md:w-[300px] shrink-0" 
                          style="transform: rotate(<?= $rot ?>deg);">
                         
                         <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 z-20 w-4 h-4 rounded-full bg-red-500 shadow-md border border-red-700"></div>
                         <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 z-0 w-1 h-2 bg-black/20"></div>
 
-                        <div class="<?= $row['warna'] ?> p-5 rounded-bl-3xl rounded-br-md rounded-tr-md shadow-md border border-black/5 group-hover:scale-[1.02] group-hover:shadow-xl transition duration-300 relative min-h-[240px] flex flex-col justify-between">
+                        <div class="<?= $row['warna'] ?> p-5 rounded-bl-3xl rounded-br-md rounded-tr-md shadow-md border border-black/5 group-hover:scale-[1.02] group-hover:shadow-xl transition duration-300 relative min-h-[220px] flex flex-col justify-between">
                             
                             <div class="flex-1 mb-4">
                                 <p class="font-hand text-xl text-slate-800 leading-snug break-words max-h-[140px] overflow-y-auto pesan-scroll pr-2">
@@ -145,7 +132,7 @@ $colors = [
                     </div>
                     <?php endforeach; ?>
 
-                    <div class="w-4 shrink-0"></div>
+                    <div class="w-4 h-full shrink-0"></div>
 
                 </div>
             </div>
