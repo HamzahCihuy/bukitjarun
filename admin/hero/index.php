@@ -34,10 +34,10 @@ $slides = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <tbody>
                 <?php foreach($slides as $row): ?>
                 <tr class="border-b hover:bg-gray-50">
-                    <td class="p-3">
-                        <img src="../../assets/image/<?= $row['image'] ?>" class="w-24 h-16 object-cover rounded shadow">
-                    </td>
-                    <td class="p-3"><?= $row['urutan'] ?></td>
+<td class="p-3">
+            <img src="<?= $row['image'] ?>" class="w-24 h-16 object-cover rounded shadow" onerror="this.src='https://via.placeholder.com/150?text=Error';">
+        </td>
+        <td class="p-3"><?= $row['urutan'] ?></td>
                     <td class="p-3">
                         <?php if($row['is_active']): ?>
                             <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Aktif</span>
