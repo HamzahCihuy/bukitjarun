@@ -1,6 +1,6 @@
 <?php
 session_start();
-include '../../db/koneksi.php'; // Mundur 2 langkah karena di dalam folder hero
+include '../../db/koneksi.php';
 
 $stmt = $pdo->query("SELECT * FROM hero_slides ORDER BY urutan ASC");
 $slides = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -11,6 +11,7 @@ $slides = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <title>Kelola Slider</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-gray-100 p-6">
     <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-md p-6">
@@ -34,10 +35,10 @@ $slides = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <tbody>
                 <?php foreach($slides as $row): ?>
                 <tr class="border-b hover:bg-gray-50">
-<td class="p-3">
-            <img src="<?= $row['image'] ?>" class="w-24 h-16 object-cover rounded shadow" onerror="this.src='https://via.placeholder.com/150?text=Error';">
-        </td>
-        <td class="p-3"><?= $row['urutan'] ?></td>
+                    <td class="p-3">
+                        <img src="<?= $row['image'] ?>" class="w-24 h-16 object-cover rounded shadow" onerror="this.src='https://via.placeholder.com/150?text=Error';">
+                    </td>
+                    <td class="p-3 font-bold"><?= $row['urutan'] ?></td>
                     <td class="p-3">
                         <?php if($row['is_active']): ?>
                             <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Aktif</span>
@@ -45,8 +46,10 @@ $slides = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Mati</span>
                         <?php endif; ?>
                     </td>
-                    <td class="p-3">
-                        <a href="hapus.php?id=<?= $row['id'] ?>" onclick="return confirm('Yakin hapus?')" class="text-red-600 hover:text-red-900 font-bold text-sm">Hapus</a>
+                    <td class="p-3 flex gap-3">
+                        <a href="edit.php?id=<?= $row['id'] ?>" class="text-blue-600 hover:text-blue-900 bg-blue-100 px-3 py-1 rounded text-sm font-bold">Edit</a>
+                        
+                        <a href="hapus.php?id=<?= $row['id'] ?>" onclick="return confirm('Yakin hapus?')" class="text-red-600 hover:text-red-900 bg-red-100 px-3 py-1 rounded text-sm font-bold">Hapus</a>
                     </td>
                 </tr>
                 <?php endforeach; ?>
