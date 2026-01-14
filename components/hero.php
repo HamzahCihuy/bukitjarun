@@ -58,7 +58,7 @@ if (empty($slides)) {
     const images = <?= json_encode($slides) ?>;
     
     // PERBAIKAN DI SINI: Pastikan sesuai nama folder kamu 'image' (tanpa s)
-    const pathPrefix = 'assets/image/'; 
+    const pathPrefix = ''; 
     
     let currentIndex = 0;
     const carouselContent = document.getElementById('carouselContent');
@@ -129,4 +129,5 @@ if (empty($slides)) {
 
     document.addEventListener('DOMContentLoaded', initSlider);
 </script>
+
 
