@@ -1,212 +1,171 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Voucher Resmi</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Share+Tech+Mono&family=Libre+Barcode+128&display=swap" rel="stylesheet">
+<?php
+if(!isset($nama_peserta)) $nama_peserta = "Hamzah Pro";
+if(!isset($kode_unik)) $kode_unik = "JARUN-X7B9";
+if(!isset($misi)) $misi = "Misi: Foto Selfie dengan Tenda";
+?>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;700&family=Bebas+Neue&family=Permanent+Marker&display=swap" rel="stylesheet">
+
+<style>
+    .font-bebas { font-family: 'Bebas Neue', sans-serif; }
+    .font-marker { font-family: 'Permanent Marker', cursive; }
     
-    <style>
-        :root {
-            --neon-green: #17FFB2;
-            --dark-green: #064E3B;
-            --gold: #FCD34D;
-        }
-        body {
-            background-color: #022c22;
-            background-image: 
-                radial-gradient(at 0% 0%, hsla(153,91%,48%,1) 0, transparent 50%), 
-                radial-gradient(at 100% 100%, hsla(153,91%,48%,1) 0, transparent 50%);
-            font-family: 'Fredoka', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
+    /* Area Preview (Disembunyikan dari tampilan normal, tapi dirender browser) */
+    #ticket-container {
+        position: fixed;
+        top: -9999px; /* Sembunyikan di luar layar */
+        left: 0;
+        width: 1080px; /* Resolusi HD Story */
+        height: 1920px;
+        background: #0f172a;
+        z-index: 9999;
+    }
+</style>
 
-        /* Desain Tiket Sobek */
-        .ticket-container {
-            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.5));
-            animation: slideUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
+<div id="ticket-container" class="relative overflow-hidden text-center flex flex-col items-center justify-between pt-24 pb-24">
 
-        .ticket-wrapper {
-            background: #ffffff;
-            position: relative;
-            clip-path: polygon(
-                20px 0, 100% 0, 100% 100%, 20px 100%, 
-                0 100%, 0 0
-            ); 
-            /* Masking bulat untuk efek sobekan tiket (Notches) */
-            --mask: radial-gradient(12px at 12px 50%, #0000 98%, #000) 50% / 100% 40px repeat-y;
-            -webkit-mask: var(--mask); 
-            mask: var(--mask);
-        }
+    <div class="absolute inset-0 z-0">
+        <img src="https://images.unsplash.com/photo-1523987355523-c7b5b0dd90a7?q=80&w=1080&auto=format&fit=crop" 
+             class="w-full h-full object-cover filter brightness-[0.6] contrast-125">
+    </div>
+
+    <div class="absolute inset-0 z-0 bg-gradient-to-b from-black/60 via-transparent to-[#0E5941]/90"></div>
+
+    <div class="absolute top-10 right-10 text-8xl opacity-80 animate-pulse">✨</div>
+    <div class="absolute top-40 left-10 text-6xl opacity-60">🏕️</div>
+    <div class="absolute bottom-40 right-10 text-7xl opacity-80">🔥</div>
+
+    <div class="relative z-10 w-full px-10 pt-10">
+        <div class="inline-block border-2 border-[#17FFB2] text-[#17FFB2] px-6 py-2 rounded-full text-2xl font-bold tracking-[0.2em] mb-4 bg-black/20 backdrop-blur-md">
+            OFFICIAL TICKET
+        </div>
+        <h1 class="text-[#17FFB2] text-[140px] leading-none font-bebas drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">
+            BUKIT JAR'UN
+        </h1>
+        <p class="text-white text-4xl font-marker mt-2 tracking-wider rotate-[-2deg]">
+            The Ultimate Camping Experience! 🌲
+        </p>
+    </div>
+
+    <div class="relative z-10 w-[850px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-[60px] p-10 shadow-[0_30px_60px_rgba(0,0,0,0.5)] flex flex-col items-center mt-10">
         
-        /* Garis Hologram Emas */
-        .hologram-strip {
-            background: linear-gradient(135deg, #FCD34D 0%, #F59E0B 20%, #FFFBEB 40%, #F59E0B 60%, #FCD34D 100%);
-            background-size: 200% 200%;
-            animation: shine 3s linear infinite;
-        }
-
-        /* Font Barcode */
-        .barcode {
-            font-family: 'Libre Barcode 128', cursive;
-            font-size: 4rem;
-            line-height: 1;
-            transform: scaleY(1.5);
-        }
-
-        /* Font Kode Unik */
-        .tech-font { font-family: 'Share Tech Mono', monospace; }
-
-        /* Dekorasi Kelapa */
-        .palm-pattern {
-            background-image: url('https://img.icons8.com/ios-filled/100/16a34a/palm-tree.png');
-            background-size: 60px;
-            opacity: 0.05;
-        }
-
-        @keyframes shine { 
-            0% { background-position: 200% center; }
-            100% { background-position: -200% center; }
-        }
-        @keyframes slideUp {
-            from { transform: translateY(100px) rotate(-5deg); opacity: 0; }
-            to { transform: translateY(0) rotate(0); opacity: 1; }
-        }
-
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background-color: #17FFB2;
-            animation: fall linear forwards;
-        }
-        @keyframes fall {
-            to { transform: translateY(100vh) rotate(720deg); }
-        }
-    </style>
-</head>
-<body class="relative">
-
-    <?php
-    // Ambil Data dari URL
-    $nama = isset($_GET['name']) ? htmlspecialchars($_GET['name']) : 'Peserta';
-    $kode = isset($_GET['code']) ? htmlspecialchars($_GET['code']) : 'TIKET-ERROR';
-    $misi = isset($_GET['mission']) ? htmlspecialchars($_GET['mission']) : 'Misi Umum';
-    $tanggal = date("d F Y");
-    ?>
-
-    <div id="confetti-container" class="absolute inset-0 pointer-events-none z-0"></div>
-
-    <div class="relative z-10 p-4 w-full max-w-4xl">
-        
-        <div class="text-center mb-8">
-            <h1 class="text-white text-3xl font-black tracking-widest uppercase drop-shadow-lg">Official Reward Ticket</h1>
-            <p class="text-green-300 text-sm tracking-wide">VERIFIED BY AI SYSTEM</p>
+        <div class="absolute -top-6 bg-red-600 text-white text-3xl font-bold px-10 py-3 rounded-full shadow-lg font-bebas tracking-widest border-2 border-white/50">
+            VERIFIED PARTICIPANT ✅
         </div>
 
-        <div class="ticket-container w-full">
-            <div class="flex flex-col md:flex-row bg-white rounded-3xl overflow-hidden relative min-h-[400px]">
-                
-                <div class="w-full md:w-[35%] bg-green-900 relative overflow-hidden flex items-center justify-center p-6 group">
-                    <div class="absolute inset-0 palm-pattern"></div>
-                    <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/60"></div>
-                    
-                    <div class="relative z-10 text-center transform transition duration-700 group-hover:scale-110 group-hover:rotate-6">
-                        <img src="https://img.icons8.com/color/480/coconut.png" alt="Coconut" class="w-40 h-40 mx-auto drop-shadow-2xl filter brightness-110">
-                        <div class="mt-4 border-2 border-[#17FFB2] text-[#17FFB2] px-4 py-1 rounded-full text-xs font-bold tracking-widest uppercase bg-black/20 backdrop-blur-sm">
-                            Premium Reward
-                        </div>
-                    </div>
-
-                    <div class="absolute left-0 top-0 bottom-0 w-3 hologram-strip"></div>
-                </div>
-
-                <div class="w-full md:w-[65%] p-8 md:p-10 relative bg-[#fffcf5]">
-                    <div class="absolute right-[-20px] bottom-[-20px] opacity-10 pointer-events-none">
-                        <img src="https://img.icons8.com/color/480/palm-tree.png" class="w-64 h-64 grayscale">
-                    </div>
-
-                    <div class="flex justify-between items-start mb-6">
-                        <div>
-                            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">EVENT WISATA ALAM</p>
-                            <h2 class="text-3xl font-black text-green-900 leading-none"><?= $misi ?></h2>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-xs font-bold text-gray-400 uppercase">ISSUED DATE</p>
-                            <p class="text-green-800 font-bold"><?= $tanggal ?></p>
-                        </div>
-                    </div>
-
-                    <div class="w-full border-b-2 border-dashed border-gray-300 my-6"></div>
-
-                    <div class="grid grid-cols-2 gap-8 mb-8">
-                        <div>
-                            <p class="text-xs font-bold text-gray-400 uppercase mb-1">PEMILIK VOUCHER</p>
-                            <p class="text-xl font-bold text-green-900 capitalize truncate"><?= $nama ?></p>
-                        </div>
-                        <div>
-                            <p class="text-xs font-bold text-gray-400 uppercase mb-1">STATUS</p>
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800">
-                                <span class="w-2 h-2 mr-2 bg-green-500 rounded-full animate-pulse"></span>
-                                VERIFIED VALID
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="bg-gray-900 rounded-2xl p-6 text-center relative overflow-hidden shadow-inner border border-gray-700">
-                        <div class="absolute inset-0 opacity-20" style="background-image: repeating-linear-gradient(45deg, #000 0, #000 10px, #222 10px, #222 20px);"></div>
-                        
-                        <p class="text-gray-400 text-[10px] uppercase tracking-[0.3em] mb-2 relative z-10">KODE UNIK PENUKARAN</p>
-                        <h3 class="text-4xl md:text-5xl text-[#17FFB2] tech-font font-bold tracking-wider relative z-10 drop-shadow-[0_0_10px_rgba(23,255,178,0.5)]">
-                            <?= $kode ?>
-                        </h3>
-                    </div>
-
-                    <div class="mt-6 text-center opacity-60">
-                        <div class="barcode text-black">123456789</div>
-                        <p class="text-[10px] tracking-widest mt-[-10px]">SCAN VERIFICATION ONLY</p>
-                    </div>
-
-                </div>
-
-                <div class="absolute left-[35%] top-[-10px] w-6 h-6 bg-[#022c22] rounded-full"></div>
-                <div class="absolute left-[35%] bottom-[-10px] w-6 h-6 bg-[#022c22] rounded-full"></div>
+        <div class="w-64 h-64 rounded-full p-2 bg-gradient-to-tr from-[#17FFB2] to-yellow-400 mt-8 mb-6 shadow-2xl relative">
+            <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=<?= $nama_peserta ?>&backgroundColor=b6e3f4" 
+                 class="w-full h-full rounded-full bg-white object-cover">
+            <div class="absolute bottom-0 right-0 bg-blue-600 text-white text-4xl p-4 rounded-full border-4 border-white shadow-lg">
+                🚀
             </div>
-            
-            <div class="mt-8 flex justify-center gap-4">
-                <button onclick="window.print()" class="px-8 py-3 bg-white text-green-900 font-bold rounded-full shadow-lg hover:bg-gray-100 transition flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                    Simpan / Cetak
-                </button>
-                <a href="index.php" class="px-8 py-3 bg-[#17FFB2] text-green-900 font-bold rounded-full shadow-lg hover:brightness-110 transition">
-                    Selesai
-                </a>
-            </div>
+        </div>
 
+        <h2 class="text-white text-6xl font-black font-fun mb-2 drop-shadow-md">
+            <?= $nama_peserta ?>
+        </h2>
+        <p class="text-[#17FFB2] text-3xl font-bold uppercase tracking-widest mb-10">
+            Adventure Seeker
+        </p>
+
+        <div class="w-full h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent mb-10"></div>
+
+        <div class="grid grid-cols-2 gap-8 w-full text-left px-4">
+            <div class="bg-black/20 p-6 rounded-3xl border border-white/10">
+                <p class="text-slate-300 text-xl font-bold uppercase mb-1">Kode Tiket</p>
+                <p class="text-yellow-400 text-5xl font-bebas tracking-wider"><?= $kode_unik ?></p>
+            </div>
+            <div class="bg-black/20 p-6 rounded-3xl border border-white/10">
+                <p class="text-slate-300 text-xl font-bold uppercase mb-1">Tanggal</p>
+                <p class="text-white text-4xl font-bold font-fun"><?= date('d M Y') ?></p>
+            </div>
+        </div>
+
+        <div class="mt-8 bg-[#17FFB2]/20 border border-[#17FFB2]/50 w-full py-6 rounded-3xl text-center">
+            <p class="text-[#17FFB2] text-2xl font-bold">🎯 Misi Terkonfirmasi:</p>
+            <p class="text-white text-3xl font-marker mt-2">"<?= substr($misi, 0, 30) ?>..."</p>
         </div>
     </div>
 
-    <script>
-        function createConfetti() {
-            const container = document.getElementById('confetti-container');
-            const colors = ['#17FFB2', '#FCD34D', '#FFFFFF'];
+    <div class="relative z-10 mt-auto flex flex-col items-center">
+        <div class="bg-white p-4 rounded-3xl mb-6 shadow-lg">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=<?= $kode_unik ?>" class="w-32 h-32 opacity-90">
+        </div>
+        <p class="text-white text-3xl font-bold tracking-widest opacity-80">WWW.BUKITJARUN.COM</p>
+        <p class="text-slate-400 text-xl mt-2">See you at the top! ⛰️</p>
+    </div>
+
+</div>
+
+<div class="w-full max-w-md mx-auto mt-8 p-6 bg-white rounded-3xl shadow-xl border border-slate-100 text-center">
+    <div class="mb-4 flex justify-center">
+        <div class="w-20 h-20 bg-gradient-to-tr from-pink-500 to-orange-400 rounded-2xl flex items-center justify-center text-4xl shadow-lg text-white">
+            📸
+        </div>
+    </div>
+    
+    <h3 class="text-2xl font-black text-slate-800 mb-2">Pamerin Tiketmu!</h3>
+    <p class="text-slate-500 text-sm mb-6">
+        Download kartu resmi ini dan post di <b>Instagram/WhatsApp Story</b>. Tag temanmu biar mereka iri! 😜
+    </p>
+
+    <button onclick="downloadStory()" id="btn-download-story" 
+            class="w-full py-4 bg-gradient-to-r from-pink-600 to-purple-600 text-white rounded-xl font-bold text-lg shadow-lg shadow-pink-500/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2">
+        <span>✨ Download Story Card</span>
+        <svg id="icon-dl" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+        <svg id="icon-loading" class="w-6 h-6 animate-spin hidden" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+    </button>
+    
+    <p class="text-xs text-slate-400 mt-3">*Tunggu sebentar saat proses generate gambar HD.</p>
+</div>
+
+<script>
+    function downloadStory() {
+        const btn = document.getElementById('btn-download-story');
+        const iconDl = document.getElementById('icon-dl');
+        const iconLoad = document.getElementById('icon-loading');
+        const container = document.getElementById('ticket-container');
+
+        // UI Loading
+        btn.disabled = true;
+        btn.classList.add('opacity-75');
+        iconDl.classList.add('hidden');
+        iconLoad.classList.remove('hidden');
+
+        // Opsi html2canvas untuk kualitas HD
+        const options = {
+            scale: 1, // Sudah 1080px, jadi scale 1 cukup. Kalau mau ultra HD pake 2.
+            useCORS: true, // Penting agar gambar avatar/bg eksternal terender
+            backgroundColor: null,
+            logging: false
+        };
+
+        html2canvas(container, options).then(canvas => {
+            // Convert ke Image URL
+            const image = canvas.toDataURL("image/png");
             
-            for(let i=0; i<50; i++) {
-                const conf = document.createElement('div');
-                conf.classList.add('confetti');
-                conf.style.left = Math.random() * 100 + 'vw';
-                conf.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                container.appendChild(conf);
-            }
-        }
-        createConfetti();
-    </script>
-</body>
-</html>
+            // Buat Link Download
+            const link = document.createElement('a');
+            link.download = 'Tiket-Jarun-<?= $kode_unik ?>.png';
+            link.href = image;
+            link.click();
+
+            // Reset UI
+            btn.disabled = false;
+            btn.classList.remove('opacity-75');
+            iconDl.classList.remove('hidden');
+            iconLoad.classList.add('hidden');
+            
+            // Opsional: Alert sukses
+            // alert('Gambar siap! Cek galeri kamu.');
+        }).catch(err => {
+            console.error(err);
+            alert('Gagal generate gambar. Coba lagi ya!');
+            btn.disabled = false;
+            iconDl.classList.remove('hidden');
+            iconLoad.classList.add('hidden');
+        });
+    }
+</script>
