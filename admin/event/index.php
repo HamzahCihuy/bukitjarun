@@ -64,12 +64,16 @@ $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <p class="font-semibold text-gray-700 mb-1">Misi:</p>
                             <p class="text-gray-500 truncate"><?= htmlspecialchars($row['mission']) ?></p>
                         </td>
-                        <td class="p-3 text-center">
-                            <a href="hapus.php?id=<?= $row['id'] ?>" onclick="return confirm('Yakin ingin menghapus event ini?')" 
-                               class="inline-block bg-red-100 text-red-600 hover:bg-red-200 hover:text-red-800 p-2 rounded-lg transition">
-                                <i class="fas fa-trash-alt"></i>
-                            </a>
-                        </td>
+<td class="p-3 text-center flex justify-center gap-2">
+    <a href="edit.php?id=<?= $row['id'] ?>" class="inline-block bg-blue-100 text-blue-600 hover:bg-blue-200 hover:text-blue-800 p-2 rounded-lg transition" title="Edit Event">
+        <i class="fas fa-edit"></i>
+    </a>
+    
+    <a href="hapus.php?id=<?= $row['id'] ?>" onclick="return confirm('Yakin ingin menghapus event ini?')" 
+       class="inline-block bg-red-100 text-red-600 hover:bg-red-200 hover:text-red-800 p-2 rounded-lg transition" title="Hapus Event">
+        <i class="fas fa-trash-alt"></i>
+    </a>
+</td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>
