@@ -47,7 +47,7 @@ session_start();
                     <h2 class="text-xl font-bold text-gray-800">Info Lokasi</h2>
                     <i class="fas fa-map-marked-alt text-3xl text-green-200"></i>
                 </div>
-                <p class="text-gray-500 text-sm">Segera Hadir.</p>
+                <p class="text-gray-500 text-sm">Info Lokasi, Deskripsi Lokasi, Alamat Lengkap.</p>
             </a>
 
         </div>
