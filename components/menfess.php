@@ -30,6 +30,9 @@ $colors = [
     .pesan-scroll::-webkit-scrollbar { width: 4px; }
     .pesan-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
     .pesan-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 10px; }
+    
+    /* Transisi Accordion Halus */
+    #form-wrapper { transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out; }
 </style>
 
 <section id="menfess" class="py-20 relative bg-[#f8fafc]">
@@ -40,7 +43,7 @@ $colors = [
 
     <div class="container mx-auto px-4 relative z-10 max-w-7xl">
 
-        <div class="text-center mb-12">
+        <div class="text-center mb-8">
             <span class="bg-pink-100 text-pink-600 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest border border-pink-200">
                 💌 Papan Curhat
             </span>
@@ -52,13 +55,18 @@ $colors = [
             </p>
         </div>
 
-        <div class="flex flex-col lg:flex-row gap-8 items-start">
+        <div class="max-w-md mx-auto mb-12 relative z-30">
             
-            <div class="w-full lg:w-[350px] shrink-0 lg:sticky lg:top-24 z-30">
-                <div class="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200 border-2 border-slate-100 relative overflow-hidden">
+            <button onclick="toggleForm()" id="btn-toggle-form" 
+                    class="w-full bg-gradient-to-r from-pink-500 to-purple-500 text-white font-bold text-lg py-4 rounded-2xl shadow-lg shadow-pink-500/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 group">
+                <span class="text-2xl group-hover:rotate-12 transition-transform">✍️</span>
+                <span>Tulis Pesan Rahasia</span>
+                <svg id="chevron-icon" class="w-5 h-5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+
+            <div id="form-wrapper" class="max-h-0 opacity-0 overflow-hidden mt-4">
+                <div class="bg-white rounded-3xl p-6 shadow-2xl shadow-slate-200 border-2 border-slate-100 relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-pink-400 to-purple-400"></div>
-                    
-                    <h3 class="font-bold text-xl text-slate-800 mb-4 font-fun">✍️ Tulis Pesan</h3>
                     
                     <div class="space-y-4">
                         <div>
@@ -74,7 +82,7 @@ $colors = [
 
                         <div>
                             <label class="text-xs font-bold text-slate-400 uppercase mb-2 block">Warna Kertas</label>
-                            <div class="flex gap-3">
+                            <div class="flex gap-3 justify-center">
                                 <?php foreach($colors as $cls => $name): ?>
                                 <label class="cursor-pointer">
                                     <input type="radio" name="mf-color" value="<?= $cls ?>" class="peer sr-only" <?= $cls == 'bg-yellow-200' ? 'checked' : '' ?>>
@@ -90,58 +98,82 @@ $colors = [
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="w-full min-w-0">
+        <div class="w-full">
+            <div id="menfess-wall" class="flex flex-col flex-wrap content-start gap-4 md:gap-6 overflow-x-auto py-8 px-4 horizontal-scroll h-[500px] md:h-[600px]">
                 
-                <div id="menfess-wall" class="flex flex-col flex-wrap content-start gap-4 md:gap-6 overflow-x-auto py-8 px-4 horizontal-scroll h-[500px] md:h-[600px]">
-                    
-                    <?php if(empty($list_menfess)): ?>
-                        <div class="bg-white p-10 rounded-2xl border-2 border-dashed border-slate-300 text-center w-full md:w-[320px]">
-                            <p class="text-slate-400 font-bold">Belum ada curhatan. Jadilah yang pertama!</p>
-                        </div>
-                    <?php endif; ?>
+                <?php if(empty($list_menfess)): ?>
+                    <div class="bg-white p-10 rounded-2xl border-2 border-dashed border-slate-300 text-center w-full md:w-[320px]">
+                        <p class="text-slate-400 font-bold">Belum ada curhatan. Jadilah yang pertama!</p>
+                    </div>
+                <?php endif; ?>
 
-                    <?php foreach($list_menfess as $row): $rot = rand(-2, 2); ?>
+                <?php foreach($list_menfess as $row): $rot = rand(-2, 2); ?>
+                
+                <div class="relative group hover:z-50 transition-all duration-300 w-[230px] md:w-[300px] shrink-0" 
+                     style="transform: rotate(<?= $rot ?>deg);">
                     
-                    <div class="relative group hover:z-50 transition-all duration-300 w-[230px] md:w-[300px] shrink-0" 
-                         style="transform: rotate(<?= $rot ?>deg);">
+                    <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 z-20 w-3 h-3 md:w-4 md:h-4 rounded-full bg-red-500 shadow-md border border-red-700"></div>
+                    <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 z-0 w-1 h-2 bg-black/20"></div>
+
+                    <div class="<?= $row['warna'] ?> p-4 md:p-5 rounded-bl-3xl rounded-br-md rounded-tr-md shadow-md border border-black/5 group-hover:scale-[1.02] group-hover:shadow-xl transition duration-300 relative min-h-[180px] md:min-h-[220px] flex flex-col justify-between">
                         
-                        <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 z-20 w-3 h-3 md:w-4 md:h-4 rounded-full bg-red-500 shadow-md border border-red-700"></div>
-                        <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 z-0 w-1 h-2 bg-black/20"></div>
-
-                        <div class="<?= $row['warna'] ?> p-4 md:p-5 rounded-bl-3xl rounded-br-md rounded-tr-md shadow-md border border-black/5 group-hover:scale-[1.02] group-hover:shadow-xl transition duration-300 relative min-h-[180px] md:min-h-[220px] flex flex-col justify-between">
-                            
-                            <div class="flex-1 mb-3">
-                                <p class="font-hand text-base md:text-xl text-slate-800 leading-snug break-words max-h-[100px] md:max-h-[140px] overflow-y-auto pesan-scroll pr-2">
-                                    "<?= htmlspecialchars($row['pesan']) ?>"
-                                </p>
-                            </div>
-                            
-                            <div class="flex justify-between items-end border-t border-black/10 pt-2 md:pt-3 mt-auto">
-                                <div class="flex flex-col min-w-0">
-                                    <span class="text-[8px] md:text-[10px] uppercase font-bold text-black/40 tracking-wider">Dari</span>
-                                    <span class="font-bold text-xs md:text-sm text-slate-800 truncate max-w-[100px] md:max-w-[140px]">
-                                        <?= htmlspecialchars($row['pengirim']) ?>
-                                    </span>
-                                </div>
-                                <span class="text-[8px] md:text-[10px] text-black/40 font-mono shrink-0 ml-2">
-                                    <?= date('d/m H:i', strtotime($row['waktu_dibuat'])) ?>
+                        <div class="flex-1 mb-3">
+                            <p class="font-hand text-base md:text-xl text-slate-800 leading-snug break-words max-h-[100px] md:max-h-[140px] overflow-y-auto pesan-scroll pr-2">
+                                "<?= htmlspecialchars($row['pesan']) ?>"
+                            </p>
+                        </div>
+                        
+                        <div class="flex justify-between items-end border-t border-black/10 pt-2 md:pt-3 mt-auto">
+                            <div class="flex flex-col min-w-0">
+                                <span class="text-[8px] md:text-[10px] uppercase font-bold text-black/40 tracking-wider">Dari</span>
+                                <span class="font-bold text-xs md:text-sm text-slate-800 truncate max-w-[100px] md:max-w-[140px]">
+                                    <?= htmlspecialchars($row['pengirim']) ?>
                                 </span>
                             </div>
+                            <span class="text-[8px] md:text-[10px] text-black/40 font-mono shrink-0 ml-2">
+                                <?= date('d/m H:i', strtotime($row['waktu_dibuat'])) ?>
+                            </span>
                         </div>
                     </div>
-                    <?php endforeach; ?>
-
-                    <div class="w-4 h-full shrink-0"></div>
-
                 </div>
-            </div>
+                <?php endforeach; ?>
 
+                <div class="w-4 h-full shrink-0"></div>
+
+            </div>
         </div>
+
     </div>
 </section>
 
 <script>
+    // FUNGSI ACCORDION TOGGLE
+    function toggleForm() {
+        const wrapper = document.getElementById('form-wrapper');
+        const icon = document.getElementById('chevron-icon');
+        const btn = document.getElementById('btn-toggle-form');
+
+        // Cek apakah sedang terbuka (max-height tidak 0)
+        if (wrapper.style.maxHeight) {
+            // TUTUP
+            wrapper.style.maxHeight = null;
+            wrapper.classList.remove('opacity-100');
+            wrapper.classList.add('opacity-0');
+            icon.style.transform = 'rotate(0deg)';
+            btn.innerHTML = '<span class="text-2xl group-hover:rotate-12 transition-transform">✍️</span><span>Tulis Pesan Rahasia</span><svg id="chevron-icon" class="w-5 h-5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>';
+        } else {
+            // BUKA
+            wrapper.classList.remove('opacity-0');
+            wrapper.classList.add('opacity-100');
+            wrapper.style.maxHeight = wrapper.scrollHeight + "px";
+            icon.style.transform = 'rotate(180deg)';
+            btn.innerHTML = '<span class="text-2xl">❌</span><span>Batal Nulis</span>';
+        }
+    }
+
+    // LOGIKA KIRIM PESAN
     const txtArea = document.getElementById('mf-msg');
     const charCount = document.getElementById('char-count');
     txtArea.addEventListener('input', function() { charCount.innerText = this.value.length; });
