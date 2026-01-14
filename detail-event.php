@@ -146,10 +146,19 @@ $list_event = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <div id="form-claim-<?= $row['id'] ?>">
                             <div class="space-y-4">
                                 
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Nama Lengkap</label>
-                                    <input type="text" id="nama-<?= $row['id'] ?>" class="w-full px-4 py-3 rounded-xl bg-gray-50 border-2 border-gray-100 focus:border-[#17FFB2] focus:bg-white outline-none transition font-bold text-[#0E5941]" placeholder="Nama kamu...">
-                                </div>
+<div>
+    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Username TikTok/IG</label>
+    <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <span class="text-gray-400 font-bold">@</span>
+        </div>
+        <input type="text" id="nama-<?= $row['id'] ?>" 
+               class="w-full pl-10 pr-4 py-3 rounded-xl bg-gray-50 border-2 border-gray-100 focus:border-[#17FFB2] focus:bg-white outline-none transition font-bold text-[#0E5941]" 
+               placeholder="username_kamu">
+    </div>
+    <p class="text-[10px] text-gray-400 mt-1 ml-1">*Tanpa spasi, contoh: bukitjarun_official</p>
+</div>
+                            </div>
 
                                 <div>
                                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">WhatsApp (Aktif)</label>
@@ -349,3 +358,4 @@ $list_event = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </script>
 </body>
 </html>
+
