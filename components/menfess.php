@@ -6,7 +6,7 @@ $sql = "SELECT * FROM menfess ORDER BY waktu_dibuat DESC LIMIT 50";
 $stmt = $pdo->query($sql);
 $list_menfess = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Array Pilihan Warna Kertas (Tailwind Classes)
+// Array Pilihan Warna Kertas
 $colors = [
     'bg-yellow-200' => 'Kuning',
     'bg-pink-200'   => 'Pink',
@@ -20,8 +20,8 @@ $colors = [
 
 <style>
     .font-hand { font-family: 'Patrick Hand', cursive; }
-    .menfess-card { break-inside: avoid; margin-bottom: 1.5rem; }
-    /* Hide Scrollbar for Input Form */
+    /* Pastikan margin bawah cukup agar pin di bawahnya tidak ketutup */
+    .menfess-card { break-inside: avoid; margin-bottom: 2rem; } 
     .no-scrollbar::-webkit-scrollbar { display: none; }
 </style>
 
@@ -47,7 +47,7 @@ $colors = [
 
         <div class="flex flex-col lg:flex-row gap-8 items-start">
             
-            <div class="w-full lg:w-1/3 lg:sticky lg:top-24">
+            <div class="w-full lg:w-1/3 lg:sticky lg:top-24 z-30">
                 <div class="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200 border-2 border-slate-100 relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-pink-400 to-purple-400"></div>
                     
@@ -86,36 +86,35 @@ $colors = [
 
             <div class="w-full lg:w-2/3">
                 
-                <div id="menfess-wall" class="columns-2 md:columns-3 gap-6 space-y-6">
+                <div id="menfess-wall" class="columns-2 md:columns-3 gap-6 pt-8 pb-10 px-2">
                     
                     <?php if(empty($list_menfess)): ?>
-                        <div class="bg-white p-6 rounded-2xl border-2 border-dashed border-slate-300 text-center col-span-full w-full">
+                        <div class="bg-white p-6 rounded-2xl border-2 border-dashed border-slate-300 text-center col-span-full w-full break-inside-avoid">
                             <p class="text-slate-400 font-bold">Belum ada curhatan. Jadilah yang pertama!</p>
                         </div>
                     <?php endif; ?>
 
-                    <?php foreach($list_menfess as $row): 
-                        // Random Rotation biar natural kayak ditempel sembarangan
-                        $rot = rand(-3, 3); 
-                    ?>
-                    <div class="menfess-card relative group break-inside-avoid" style="transform: rotate(<?= $rot ?>deg);">
-                        <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10 w-4 h-4 rounded-full bg-red-500 shadow-md border border-red-700"></div>
+                    <?php foreach($list_menfess as $row): $rot = rand(-2, 2); ?>
+                    <div class="menfess-card relative group hover:z-50 transition-all duration-300" style="transform: rotate(<?= $rot ?>deg);">
+                        
+                        <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 z-20 w-4 h-4 rounded-full bg-red-500 shadow-md border border-red-700"></div>
                         <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 z-0 w-1 h-2 bg-black/20"></div>
 
-                        <div class="<?= $row['warna'] ?> p-5 rounded-bl-3xl rounded-br-md rounded-tr-md shadow-md border border-black/5 hover:scale-[1.02] transition duration-300 relative">
-                            <p class="font-hand text-xl text-slate-800 leading-snug mb-4">
+                        <div class="<?= $row['warna'] ?> p-5 rounded-bl-3xl rounded-br-md rounded-tr-md shadow-md border border-black/5 group-hover:scale-[1.02] group-hover:shadow-xl transition duration-300 relative">
+                            
+                            <p class="font-hand text-xl text-slate-800 leading-snug mb-4 break-words">
                                 "<?= htmlspecialchars($row['pesan']) ?>"
                             </p>
                             
                             <div class="flex justify-between items-end border-t border-black/10 pt-3">
-                                <div class="flex flex-col">
+                                <div class="flex flex-col min-w-0">
                                     <span class="text-[10px] uppercase font-bold text-black/40 tracking-wider">Dari</span>
                                     <span class="font-bold text-sm text-slate-800 truncate max-w-[120px]">
                                         <?= htmlspecialchars($row['pengirim']) ?>
                                     </span>
                                 </div>
-                                <span class="text-[10px] text-black/40 font-mono">
-                                    <?= date('d M H:i', strtotime($row['waktu_dibuat'])) ?>
+                                <span class="text-[10px] text-black/40 font-mono shrink-0 ml-2">
+                                    <?= date('d/m H:i', strtotime($row['waktu_dibuat'])) ?>
                                 </span>
                             </div>
                         </div>
@@ -132,11 +131,7 @@ $colors = [
 <script>
     const txtArea = document.getElementById('mf-msg');
     const charCount = document.getElementById('char-count');
-
-    // Hitung Karakter
-    txtArea.addEventListener('input', function() {
-        charCount.innerText = this.value.length;
-    });
+    txtArea.addEventListener('input', function() { charCount.innerText = this.value.length; });
 
     async function kirimMenfess() {
         const sender = document.getElementById('mf-sender').value;
@@ -146,9 +141,7 @@ $colors = [
 
         if(!msg) { alert("Tulis pesan dulu dong!"); return; }
 
-        // Loading State
-        btn.innerHTML = "Menempelkan...";
-        btn.disabled = true;
+        btn.innerHTML = "Menempelkan..."; btn.disabled = true;
 
         try {
             const res = await fetch('api-save-menfess.php', {
@@ -157,21 +150,16 @@ $colors = [
                 body: JSON.stringify({ pengirim: sender, pesan: msg, warna: color })
             });
             const data = await res.json();
-
             if(data.status === 'success') {
-                // Berhasil
                 alert("✨ Pesan berhasil ditempel!");
-                location.reload(); // Reload halaman untuk melihat pesan baru
+                location.reload(); 
             } else {
                 alert("Gagal: " + data.msg);
-                btn.innerHTML = "Tempel Pesan 📌";
-                btn.disabled = false;
+                btn.innerHTML = "Tempel Pesan 📌"; btn.disabled = false;
             }
         } catch(e) {
-            console.error(e);
-            alert("Terjadi kesalahan sistem.");
-            btn.innerHTML = "Tempel Pesan 📌";
-            btn.disabled = false;
+            console.error(e); alert("Terjadi kesalahan sistem.");
+            btn.innerHTML = "Tempel Pesan 📌"; btn.disabled = false;
         }
     }
 </script>
