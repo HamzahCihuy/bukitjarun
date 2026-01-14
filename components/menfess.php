@@ -6,7 +6,6 @@ $sql = "SELECT * FROM menfess ORDER BY waktu_dibuat DESC LIMIT 50";
 $stmt = $pdo->query($sql);
 $list_menfess = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Array Pilihan Warna Kertas
 $colors = [
     'bg-yellow-200' => 'Kuning',
     'bg-pink-200'   => 'Pink',
@@ -20,9 +19,30 @@ $colors = [
 
 <style>
     .font-hand { font-family: 'Patrick Hand', cursive; }
-    /* Pastikan margin bawah cukup agar pin di bawahnya tidak ketutup */
-    .menfess-card { break-inside: avoid; margin-bottom: 2rem; } 
-    .no-scrollbar::-webkit-scrollbar { display: none; }
+    
+    /* Scrollbar Horizontal yang Cantik */
+    .horizontal-scroll::-webkit-scrollbar {
+        height: 12px; /* Tinggi scrollbar horizontal */
+    }
+    .horizontal-scroll::-webkit-scrollbar-track {
+        background: rgba(0,0,0,0.05);
+        border-radius: 20px;
+        margin: 0 20px;
+    }
+    .horizontal-scroll::-webkit-scrollbar-thumb {
+        background: #cbd5e1; 
+        border-radius: 20px;
+        border: 3px solid transparent;
+        background-clip: content-box;
+    }
+    .horizontal-scroll::-webkit-scrollbar-thumb:hover {
+        background-color: #94a3b8;
+    }
+
+    /* Scrollbar Pesan (Vertikal Tipis) */
+    .pesan-scroll::-webkit-scrollbar { width: 4px; }
+    .pesan-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
+    .pesan-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 10px; }
 </style>
 
 <section id="menfess" class="py-20 relative bg-[#f8fafc]">
@@ -31,7 +51,7 @@ $colors = [
          style="background-image: radial-gradient(#64748b 1px, transparent 1px); background-size: 20px 20px;">
     </div>
 
-    <div class="container mx-auto px-4 relative z-10 max-w-6xl">
+    <div class="container mx-auto px-4 relative z-10 max-w-7xl">
 
         <div class="text-center mb-12">
             <span class="bg-pink-100 text-pink-600 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest border border-pink-200">
@@ -41,13 +61,13 @@ $colors = [
                 MENFESS <span class="text-pink-500">JAR'UN</span>
             </h2>
             <p class="text-slate-500 text-lg">
-                Kirim pesan rahasia, salam-salam, atau cari jodoh di sini! 😜
+                Geser ke kanan untuk melihat curhatan netizen! 👉
             </p>
         </div>
 
         <div class="flex flex-col lg:flex-row gap-8 items-start">
             
-            <div class="w-full lg:w-1/3 lg:sticky lg:top-24 z-30">
+            <div class="w-full lg:w-[350px] shrink-0 lg:sticky lg:top-24 z-30">
                 <div class="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200 border-2 border-slate-100 relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-pink-400 to-purple-400"></div>
                     
@@ -84,32 +104,36 @@ $colors = [
                 </div>
             </div>
 
-            <div class="w-full lg:w-2/3">
+            <div class="w-full min-w-0">
                 
-                <div id="menfess-wall" class="columns-2 md:columns-3 gap-6 pt-8 pb-10 px-2">
+                <div id="menfess-wall" class="flex gap-6 overflow-x-auto py-10 px-4 horizontal-scroll snap-x snap-mandatory">
                     
                     <?php if(empty($list_menfess)): ?>
-                        <div class="bg-white p-6 rounded-2xl border-2 border-dashed border-slate-300 text-center col-span-full w-full break-inside-avoid">
+                        <div class="bg-white p-10 rounded-2xl border-2 border-dashed border-slate-300 text-center w-full shrink-0">
                             <p class="text-slate-400 font-bold">Belum ada curhatan. Jadilah yang pertama!</p>
                         </div>
                     <?php endif; ?>
 
                     <?php foreach($list_menfess as $row): $rot = rand(-2, 2); ?>
-                    <div class="menfess-card relative group hover:z-50 transition-all duration-300" style="transform: rotate(<?= $rot ?>deg);">
+                    
+                    <div class="relative group hover:z-50 transition-all duration-300 w-[280px] md:w-[320px] flex-shrink-0 snap-center" 
+                         style="transform: rotate(<?= $rot ?>deg);">
                         
                         <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 z-20 w-4 h-4 rounded-full bg-red-500 shadow-md border border-red-700"></div>
                         <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 z-0 w-1 h-2 bg-black/20"></div>
 
-                        <div class="<?= $row['warna'] ?> p-5 rounded-bl-3xl rounded-br-md rounded-tr-md shadow-md border border-black/5 group-hover:scale-[1.02] group-hover:shadow-xl transition duration-300 relative">
+                        <div class="<?= $row['warna'] ?> p-5 rounded-bl-3xl rounded-br-md rounded-tr-md shadow-md border border-black/5 group-hover:scale-[1.02] group-hover:shadow-xl transition duration-300 relative min-h-[240px] flex flex-col justify-between">
                             
-                            <p class="font-hand text-xl text-slate-800 leading-snug mb-4 break-words">
-                                "<?= htmlspecialchars($row['pesan']) ?>"
-                            </p>
+                            <div class="flex-1 mb-4">
+                                <p class="font-hand text-xl text-slate-800 leading-snug break-words max-h-[140px] overflow-y-auto pesan-scroll pr-2">
+                                    "<?= htmlspecialchars($row['pesan']) ?>"
+                                </p>
+                            </div>
                             
-                            <div class="flex justify-between items-end border-t border-black/10 pt-3">
+                            <div class="flex justify-between items-end border-t border-black/10 pt-3 mt-auto">
                                 <div class="flex flex-col min-w-0">
                                     <span class="text-[10px] uppercase font-bold text-black/40 tracking-wider">Dari</span>
-                                    <span class="font-bold text-sm text-slate-800 truncate max-w-[120px]">
+                                    <span class="font-bold text-sm text-slate-800 truncate max-w-[140px]">
                                         <?= htmlspecialchars($row['pengirim']) ?>
                                     </span>
                                 </div>
@@ -120,6 +144,8 @@ $colors = [
                         </div>
                     </div>
                     <?php endforeach; ?>
+
+                    <div class="w-4 shrink-0"></div>
 
                 </div>
             </div>
