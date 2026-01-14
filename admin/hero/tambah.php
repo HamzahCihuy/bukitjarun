@@ -2,49 +2,43 @@
 session_start();
 include '../../db/koneksi.php';
 
-// Proses saat tombol simpan ditekan
+// Cek Login
+if (!isset($_SESSION['status']) || $_SESSION['status'] != "login") {
+    header("location:../login.php");
+    exit();
+}
+
 if (isset($_POST['simpan'])) {
     $urutan = $_POST['urutan'];
-    
-    // Logika Upload File
-    $nama_file = $_FILES['gambar']['name'];
-    $tmp_file  = $_FILES['gambar']['tmp_name'];
-    
-    // Rename file agar unik (misal: 17099283_banner.jpg)
-    $nama_baru = time() . "_" . $nama_file;
-    
-    // Tentukan lokasi folder upload (Mundur 2 langkah dari sini -> masuk assets/image)
-    $path_upload = "../../assets/image/" . $nama_baru;
+    // AMBIL LANGSUNG SEBAGAI STRING/TEXT
+    $image_url = $_POST['image']; 
 
-    if (move_uploaded_file($tmp_file, $path_upload)) {
-        // Jika upload berhasil, masukkan nama file ke database
-        $sql = "INSERT INTO hero_slides (image, urutan, is_active) VALUES (?, ?, 1)";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$nama_baru, $urutan]);
-        
-        header("location:index.php"); // Balik ke list
-    } else {
-        echo "<script>alert('Gagal upload gambar!');</script>";
-    }
+    $sql = "INSERT INTO hero_slides (image, urutan, is_active) VALUES (?, ?, 1)";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$image_url, $urutan]);
+    
+    header("location:index.php");
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <title>Tambah Slider</title>
+    <title>Tambah Slider (Link)</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
     <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
-        <h2 class="text-xl font-bold mb-4">Upload Banner Baru</h2>
+        <h2 class="text-xl font-bold mb-4">Tambah Banner Baru</h2>
         
-        <form method="POST" enctype="multipart/form-data">
+        <form method="POST">
             
             <div class="mb-4">
-                <label class="block text-sm font-bold mb-2">Pilih Gambar</label>
-                <input type="file" name="gambar" required class="w-full border p-2 rounded">
-                <p class="text-xs text-gray-500 mt-1">Format: JPG/PNG. Ukuran Landscape.</p>
+                <label class="block text-sm font-bold mb-2">Link Gambar (URL)</label>
+                <input type="url" name="image" required class="w-full border p-2 rounded" placeholder="https://i.imgur.com/...">
+                <p class="text-xs text-gray-500 mt-1">
+                    Tips: Upload gambar ke <a href="https://imgbb.com" target="_blank" class="text-blue-500 underline">ImgBB</a> atau copy link gambar dari internet.
+                </p>
             </div>
 
             <div class="mb-4">
