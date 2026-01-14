@@ -109,4 +109,70 @@ $colors = [
                         <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 z-20 w-3 h-3 md:w-4 md:h-4 rounded-full bg-red-500 shadow-md border border-red-700"></div>
                         <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 z-0 w-1 h-2 bg-black/20"></div>
 
-                        <div class="<?= $row['warna'] ?> p-4 md:p-5 rounded-bl-3xl rounded-br-md rounded-tr-md shadow-md border border-black/5 group-hover:scale-[1.02] group-hover:shadow-xl transition duration-300 relative min-h-[180px] md:min-h-[220px] flex flex-col
+                        <div class="<?= $row['warna'] ?> p-4 md:p-5 rounded-bl-3xl rounded-br-md rounded-tr-md shadow-md border border-black/5 group-hover:scale-[1.02] group-hover:shadow-xl transition duration-300 relative min-h-[180px] md:min-h-[220px] flex flex-col justify-between">
+                            
+                            <div class="flex-1 mb-3">
+                                <p class="font-hand text-base md:text-xl text-slate-800 leading-snug break-words max-h-[100px] md:max-h-[140px] overflow-y-auto pesan-scroll pr-2">
+                                    "<?= htmlspecialchars($row['pesan']) ?>"
+                                </p>
+                            </div>
+                            
+                            <div class="flex justify-between items-end border-t border-black/10 pt-2 md:pt-3 mt-auto">
+                                <div class="flex flex-col min-w-0">
+                                    <span class="text-[8px] md:text-[10px] uppercase font-bold text-black/40 tracking-wider">Dari</span>
+                                    <span class="font-bold text-xs md:text-sm text-slate-800 truncate max-w-[100px] md:max-w-[140px]">
+                                        <?= htmlspecialchars($row['pengirim']) ?>
+                                    </span>
+                                </div>
+                                <span class="text-[8px] md:text-[10px] text-black/40 font-mono shrink-0 ml-2">
+                                    <?= date('d/m H:i', strtotime($row['waktu_dibuat'])) ?>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+
+                    <div class="w-4 h-full shrink-0"></div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<script>
+    const txtArea = document.getElementById('mf-msg');
+    const charCount = document.getElementById('char-count');
+    txtArea.addEventListener('input', function() { charCount.innerText = this.value.length; });
+
+    async function kirimMenfess() {
+        const sender = document.getElementById('mf-sender').value;
+        const msg = document.getElementById('mf-msg').value;
+        const color = document.querySelector('input[name="mf-color"]:checked').value;
+        const btn = document.getElementById('btn-kirim');
+
+        if(!msg) { alert("Tulis pesan dulu dong!"); return; }
+
+        btn.innerHTML = "Menempelkan..."; btn.disabled = true;
+
+        try {
+            const res = await fetch('api-save-menfess.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pengirim: sender, pesan: msg, warna: color })
+            });
+            const data = await res.json();
+            if(data.status === 'success') {
+                alert("✨ Pesan berhasil ditempel!");
+                location.reload(); 
+            } else {
+                alert("Gagal: " + data.msg);
+                btn.innerHTML = "Tempel Pesan 📌"; btn.disabled = false;
+            }
+        } catch(e) {
+            console.error(e); alert("Terjadi kesalahan sistem.");
+            btn.innerHTML = "Tempel Pesan 📌"; btn.disabled = false;
+        }
+    }
+</script>
