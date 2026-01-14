@@ -22,12 +22,11 @@ if (empty($slides)) {
 ?>
 
 <section class="relative overflow-hidden">
-    <div
-        id="carouselContent"
-        class="relative bg-cover bg-center pt-40 pb-40 transition-all duration-700 ease-in-out"
-        
-        style="min-height: 600px; background-image: url('assets/image/<?= htmlspecialchars($slides[0]) ?>');"
-    >
+  <div
+    id="carouselContent"
+    class="relative bg-cover bg-center pt-40 pb-40 transition-all duration-700 ease-in-out"
+    style="min-height: 600px; background-image: url('<?= htmlspecialchars($slides[0]) ?>');"
+>
         <img src="assets/svg/top.svg" class="absolute top-0 left-0 w-full z-20 pointer-events-none" alt="wave top">
 
         <button onclick="changeSlide(-1)" class="absolute left-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-[#17FFB2] hover:text-black text-white px-4 py-4 rounded-full z-40 transition-all backdrop-blur-sm border border-white/20 group">
@@ -130,3 +129,4 @@ if (empty($slides)) {
 
     document.addEventListener('DOMContentLoaded', initSlider);
 </script>
+
