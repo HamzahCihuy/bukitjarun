@@ -1,3 +1,13 @@
+<?php
+// 1. KONEKSI DATABASE
+include 'db/koneksi.php';
+
+// 2. AMBIL DATA DARI DATABASE (Tabel 'events')
+// Kita urutkan sesuai 'urutan' yang diatur di CMS
+$stmt = $pdo->query("SELECT * FROM events ORDER BY urutan ASC");
+$list_event = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -53,56 +63,9 @@
             70% { transform: scale(0.9); }
             100% { transform: scale(1); }
         }
-        .animate-bounce-in {
-            animation: bounceIn 0.5s cubic-bezier(0.215, 0.610, 0.355, 1.000);
-        }
-        .dashed-border {
-            background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%2317FFB2FF' stroke-width='4' stroke-dasharray='12%2c 12' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
-        }
     </style>
 </head>
 <body class="min-h-screen relative pb-12">
-
-<?php
-// DATA KONTEN
-$list_event = [
-    [
-        "title" => "Kelapa Segar Murni",
-        "icon" => "🥥",
-        "img" => "https://img.icons8.com/color/480/coconut.png",
-        "mission" => "Minimal posting 1 video konten apa saja di tempat wisata.",
-        "syarat" => ["Video bebas (suasana/selfie)", "Post Story IG/WA atau TikTok"],
-    ],
-    [
-        "title" => "Pinjam Alat Pancing",
-        "icon" => "🎣",
-        "img" => "https://img.icons8.com/color/480/fishing-pole.png",
-        "mission" => "Posting 2 konten membahas mengenai tempat wisata ini.",
-        "syarat" => ["Membahas fasilitas/suasana", "Durasi min. 15 detik"],
-    ],
-    [
-        "title" => "Ikan Bakar",
-        "icon" => "🐟",
-        "img" => "https://img.icons8.com/?size=100&id=lGtVJMyaXXTi&format=png&color=000000",
-        "mission" => "Posting 2 konten fokus promosi Wisata Jar'un.",
-        "syarat" => ["Minta naskah ke panitia", "Review makanan/view utama"],
-    ],
-    [
-        "title" => "Wisata Rakit",
-        "icon" => "🛶",
-        "img" => "https://img.icons8.com/?size=100&id=xOl7xdwhubRU&format=png&color=000000",
-        "mission" => "Posting satu konten sesuai ide dan naskah konten.",
-        "syarat" => ["Ikuti arahan gaya/script tim", "Video saat naik rakit"],
-    ],
-    [
-        "title" => "Alat Camping Lengkap",
-        "icon" => "⛺",
-        "img" => "https://img.icons8.com/fluency/480/camping-tent.png",
-        "mission" => "Membuat 5 konten dari 10 ide konten yang telah disediakan.",
-        "syarat" => ["Pilih 5 ide dari daftar", "Video kualitas jelas (HD)"],
-    ]
-];
-?>
 
     <div class="fixed inset-0 bg-pattern pointer-events-none z-0"></div>
 
@@ -137,9 +100,17 @@ $list_event = [
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <?php foreach($list_event as $index => $item): ?>
             
-            <div onclick="toggleModal('modal-<?= $index ?>')" 
+            <?php if(empty($list_event)): ?>
+                <div class="col-span-3 text-center py-10">
+                    <p class="text-xl font-bold opacity-50">Belum ada event aktif.</p>
+                    <a href="admin/login.php" class="text-blue-600 underline text-sm">Login Admin untuk tambah event</a>
+                </div>
+            <?php endif; ?>
+
+            <?php foreach($list_event as $index => $row): ?>
+            
+            <div onclick="toggleModal('modal-<?= $row['id'] ?>')" 
                  class="card-box bg-white rounded-[2rem] p-6 flex flex-col items-center text-center shadow-lg relative overflow-hidden group border-4 border-transparent hover:border-[#0E5941]/10">
                 
                 <div class="absolute top-4 right-4 w-10 h-10 rounded-full bg-[#17FFB2] flex items-center justify-center font-bold text-theme shadow-inner">
@@ -147,11 +118,11 @@ $list_event = [
                 </div>
 
                 <div class="w-24 h-24 mb-4 transform group-hover:scale-110 transition duration-300">
-                    <img src="<?= $item['img'] ?>" alt="Icon" class="w-full h-full object-contain">
+                    <img src="<?= $row['reward_img'] ?>" alt="Icon" class="w-full h-full object-contain">
                 </div>
 
                 <h3 class="text-2xl font-fun font-bold text-theme mb-2 leading-tight">
-                    <?= $item['title'] ?>
+                    <?= htmlspecialchars($row['title']) ?>
                 </h3>
                 
                 <span class="mt-auto inline-block text-sm font-bold border-2 border-[#0E5941] text-[#0E5941] px-4 py-1 rounded-full group-hover:bg-[#0E5941] group-hover:text-white transition">
@@ -159,51 +130,66 @@ $list_event = [
                 </span>
             </div>
 
-            <div id="modal-<?= $index ?>" class="modal opacity-0 pointer-events-none fixed inset-0 z-50 flex items-center justify-center p-4">
-                <div class="modal-overlay absolute inset-0 bg-[#0E5941] bg-opacity-80 backdrop-blur-sm" onclick="toggleModal('modal-<?= $index ?>')"></div>
+            <div id="modal-<?= $row['id'] ?>" class="modal opacity-0 pointer-events-none fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div class="modal-overlay absolute inset-0 bg-[#0E5941] bg-opacity-80 backdrop-blur-sm" onclick="toggleModal('modal-<?= $row['id'] ?>')"></div>
                 <div class="modal-content bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl relative overflow-hidden flex flex-col max-h-[90vh]">
                     
-                    <div class="bg-[#17FFB2] p-6 flex justify-center items-center relative">
-                        <button onclick="toggleModal('modal-<?= $index ?>')" class="absolute top-4 right-4 bg-white w-10 h-10 rounded-full flex items-center justify-center text-theme font-bold hover:bg-red-100 transition shadow-md z-10">✕</button>
-                        <img src="<?= $item['img'] ?>" alt="Detail" class="w-24 h-24 object-contain drop-shadow-xl animate-bounce">
+                    <div class="bg-[#17FFB2] p-6 flex justify-center items-center relative" 
+                         style="background: linear-gradient(135deg, <?= $row['color_primary'] ?>, <?= $row['color_accent'] ?>);">
+                        <button onclick="toggleModal('modal-<?= $row['id'] ?>')" class="absolute top-4 right-4 bg-white w-10 h-10 rounded-full flex items-center justify-center text-theme font-bold hover:bg-red-100 transition shadow-md z-10">✕</button>
+                        <img src="<?= $row['reward_img'] ?>" alt="Detail" class="w-24 h-24 object-contain drop-shadow-xl animate-bounce">
                     </div>
 
                     <div class="p-8 pt-6 overflow-y-auto">
                         <h2 class="text-2xl font-fun font-black text-theme mb-2 text-center leading-tight">
-                            <?= $item['title'] ?>
+                            <?= htmlspecialchars($row['title']) ?>
                         </h2>
                         
                         <div class="bg-green-50 rounded-xl p-3 mb-6 text-center border border-green-100">
-                             <p class="text-sm text-theme font-bold">🎯 Misi: <?= $item['mission'] ?></p>
+                             <p class="text-sm text-theme font-bold">🎯 Misi: <?= htmlspecialchars($row['mission']) ?></p>
                         </div>
 
-                        <div id="form-claim-<?= $index ?>">
+                        <div class="mb-6 text-left">
+                            <h4 class="font-bold text-sm mb-2 text-gray-500 uppercase">Syarat & Ketentuan:</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-sm text-gray-700">
+                                <?php 
+                                    // Memecah teks syarat berdasarkan ENTER (Baris Baru)
+                                    $syarat_list = explode(PHP_EOL, $row['syarat']);
+                                    foreach($syarat_list as $syarat_item):
+                                        if(trim($syarat_item) != ""):
+                                ?>
+                                    <li><?= trim($syarat_item) ?></li>
+                                <?php endif; endforeach; ?>
+                            </ul>
+                        </div>
+
+                        <div id="form-claim-<?= $row['id'] ?>">
                             <div class="space-y-4">
                                 <div>
                                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Nama Kamu</label>
-                                    <input type="text" id="nama-<?= $index ?>" class="w-full px-4 py-3 rounded-xl bg-gray-50 border-2 border-gray-100 focus:border-[#17FFB2] focus:bg-white outline-none transition font-bold text-theme" placeholder="Isi nama...">
+                                    <input type="text" id="nama-<?= $row['id'] ?>" class="w-full px-4 py-3 rounded-xl bg-gray-50 border-2 border-gray-100 focus:border-[#17FFB2] focus:bg-white outline-none transition font-bold text-theme" placeholder="Isi nama...">
                                 </div>
                                 
                                 <div>
                                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Link Video TikTok/IG</label>
-                                    <input type="url" id="link-<?= $index ?>" class="w-full px-4 py-3 rounded-xl bg-gray-50 border-2 border-gray-100 focus:border-[#17FFB2] focus:bg-white outline-none transition text-sm" placeholder="https://vt.tiktok.com/...">
+                                    <input type="url" id="link-<?= $row['id'] ?>" class="w-full px-4 py-3 rounded-xl bg-gray-50 border-2 border-gray-100 focus:border-[#17FFB2] focus:bg-white outline-none transition text-sm" placeholder="https://vt.tiktok.com/...">
                                     <p class="text-[10px] text-gray-400 mt-1 ml-1">*Pastikan akun tidak di-private</p>
                                 </div>
 
-                                <button onclick="verifikasiVideo(<?= $index ?>)" class="w-full py-4 rounded-xl bg-[#0E5941] text-white font-fun font-bold text-lg shadow-lg hover:bg-opacity-90 transform active:scale-95 transition flex justify-center items-center gap-2 mt-2">
+                                <button onclick="verifikasiVideo(<?= $row['id'] ?>)" class="w-full py-4 rounded-xl bg-[#0E5941] text-white font-fun font-bold text-lg shadow-lg hover:bg-opacity-90 transform active:scale-95 transition flex justify-center items-center gap-2 mt-2">
                                     <span>Verifikasi Video 🚀</span>
-                                    <span id="loading-<?= $index ?>" class="hidden animate-spin">⏳</span>
+                                    <span id="loading-<?= $row['id'] ?>" class="hidden animate-spin">⏳</span>
                                 </button>
                             </div>
                         </div>
 
-                        <div id="fail-claim-<?= $index ?>" class="hidden text-center py-4">
+                        <div id="fail-claim-<?= $row['id'] ?>" class="hidden text-center py-4">
                             <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
                                 <span class="text-3xl">😢</span>
                             </div>
                             <h3 class="text-lg font-black text-red-500 mb-1">Yah, Belum Lolos.</h3>
-                            <p id="error-msg-<?= $index ?>" class="text-sm text-gray-600 mb-4 bg-gray-100 p-3 rounded-lg">Video tidak sesuai.</p>
-                            <button onclick="resetForm(<?= $index ?>)" class="text-sm font-bold text-[#0E5941] underline hover:text-[#17FFB2]">Coba Masukkan Link Lain</button>
+                            <p id="error-msg-<?= $row['id'] ?>" class="text-sm text-gray-600 mb-4 bg-gray-100 p-3 rounded-lg">Video tidak sesuai.</p>
+                            <button onclick="resetForm(<?= $row['id'] ?>)" class="text-sm font-bold text-[#0E5941] underline hover:text-[#17FFB2]">Coba Masukkan Link Lain</button>
                         </div>
 
                     </div>
@@ -233,14 +219,14 @@ $list_event = [
             }
         };
 
-        async function verifikasiVideo(index) {
-            const inputNama = document.getElementById('nama-' + index).value;
-            const inputLink = document.getElementById('link-' + index).value;
-            const btnVerifikasi = document.querySelector(`#form-claim-${index} button`);
-            const loadingIcon = document.getElementById('loading-' + index);
-            const divFail = document.getElementById('fail-claim-' + index);
-            const textFail = document.getElementById('error-msg-' + index);
-            const divForm = document.getElementById('form-claim-' + index);
+        async function verifikasiVideo(id) {
+            const inputNama = document.getElementById('nama-' + id).value;
+            const inputLink = document.getElementById('link-' + id).value;
+            const btnVerifikasi = document.querySelector(`#form-claim-${id} button`);
+            const loadingIcon = document.getElementById('loading-' + id);
+            const divFail = document.getElementById('fail-claim-' + id);
+            const textFail = document.getElementById('error-msg-' + id);
+            const divForm = document.getElementById('form-claim-' + id);
 
             if (!inputNama || !inputLink) {
                 alert("Mohon isi Nama dan Link Video dulu ya!");
@@ -252,43 +238,31 @@ $list_event = [
             loadingIcon.classList.remove('hidden');
 
             try {
-                // ==========================================
-                // 1. CEK KONEKSI KE PYTHON (AI)
-                // ==========================================
-                console.log("Mengubungi Python...");
-                
-                // ⚠️ PENTING: GANTI DOMAIN DI BAWAH INI DENGAN DOMAIN BARU KAMU! ⚠️
-                // Contoh: https://backend-ai-kamu.up.railway.app/cek-video
+                // 1. CEK KE AI (PYTHON)
                 const response = await fetch('https://my-ai-api-production-a4c4.up.railway.app/cek-video', { 
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         url: inputLink,
-                        misi_id: index,
+                        misi_id: id,  // Mengirim ID Database
                         nama: inputNama
-                        
                     })
                 });
 
                 const textPython = await response.text(); 
-                console.log("Respon Python:", textPython); 
-
                 let data;
                 try {
                     data = JSON.parse(textPython); 
                 } catch (e) {
-                    throw new Error("SERVER AI ERROR (Bukan JSON):\n" + textPython.substring(0, 150));
+                    throw new Error("SERVER AI ERROR: " + textPython);
                 }
 
-                if (!response.ok) throw new Error("Koneksi Python Gagal: " + response.status);
+                if (!response.ok) throw new Error("Koneksi Gagal");
                 
                 if (data.status === "VALID") {
                     
-                    // ==========================================
-                    // 2. CEK KONEKSI KE PHP (DATABASE)
-                    // ==========================================
-                    console.log("Video Valid. Menyimpan ke Database...");
-                    const judulMisi = document.querySelector(`#modal-${index} h2`).innerText;
+                    // 2. SIMPAN KE DATABASE (PHP)
+                    const judulMisi = document.querySelector(`#modal-${id} h2`).innerText;
 
                     const saveResponse = await fetch('api-save-ticket.php', {
                         method: 'POST',
@@ -301,15 +275,7 @@ $list_event = [
                         })
                     });
 
-                    const saveText = await saveResponse.text();
-                    console.log("Respon PHP:", saveText);
-
-                    let saveResult;
-                    try {
-                        saveResult = JSON.parse(saveText); 
-                    } catch (e) {
-                        throw new Error("DATABASE ERROR (Isi HTML):\n" + saveText.substring(0, 150));
-                    }
+                    const saveResult = await saveResponse.json();
 
                     if(saveResult.status === 'success') {
                         const urlParams = new URLSearchParams({
@@ -334,7 +300,7 @@ $list_event = [
                 }
 
             } catch (error) {
-                console.error("Error Full:", error);
+                console.error("Error:", error);
                 alert("Terjadi Kesalahan:\n" + error.message);
                 
                 btnVerifikasi.disabled = false;
@@ -343,16 +309,13 @@ $list_event = [
             }
         }
 
-        function resetForm(index) {
-            document.getElementById('form-claim-' + index).classList.remove('hidden');
-            document.getElementById('fail-claim-' + index).classList.add('hidden');
-            const btnVerifikasi = document.querySelector(`#form-claim-${index} button`);
+        function resetForm(id) {
+            document.getElementById('form-claim-' + id).classList.remove('hidden');
+            document.getElementById('fail-claim-' + id).classList.add('hidden');
+            const btnVerifikasi = document.querySelector(`#form-claim-${id} button`);
             btnVerifikasi.disabled = false;
             btnVerifikasi.classList.remove('opacity-50', 'cursor-not-allowed');
         }
     </script>
 </body>
 </html>
-
-
-
