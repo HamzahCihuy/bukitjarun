@@ -2,6 +2,7 @@
 session_start();
 include '../../db/koneksi.php';
 
+
 $stmt = $pdo->query("SELECT * FROM events ORDER BY urutan ASC");
 $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -47,7 +48,7 @@ $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <tr class="border-b hover:bg-gray-50 transition">
                         <td class="p-3 text-center font-bold text-gray-600"><?= $row['urutan'] ?></td>
                         <td class="p-3">
-                            <img src="../../<?= $row['reward_img'] ?>" class="w-12 h-12 object-contain bg-gray-100 rounded p-1 border">
+                            <img src="<?= $row['reward_img'] ?>" class="w-12 h-12 object-contain bg-gray-100 rounded p-1 border">
                         </td>
                         <td class="p-3">
                             <div class="font-bold text-lg"><?= htmlspecialchars($row['title']) ?></div>
