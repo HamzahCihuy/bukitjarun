@@ -50,6 +50,13 @@ session_start();
                 <p class="text-gray-500 text-sm">Info Lokasi, Deskripsi Lokasi, Alamat Lengkap.</p>
             </a>
 
+            <a href="menfess/index.php" class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition transform hover:-translate-y-1 border-l-4 border-pink-500">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-gray-800">Info Lokasi</h2>
+                    <i class="fas fa-map-marked-alt text-3xl text-pink-200"></i>
+                </div>
+                <p class="text-gray-500 text-sm">Hapus papan menfess</p>
+            </a>
         </div>
     </div>
 
