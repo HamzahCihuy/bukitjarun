@@ -1,57 +1,58 @@
 <?php
 session_start();
-include '../../db/koneksi.php'; // Mundur 2 langkah karena di dalam folder hero
 
-$stmt = $pdo->query("SELECT * FROM hero_slides ORDER BY urutan ASC");
-$slides = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <title>Kelola Slider</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-gray-100 p-6">
-    <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-md p-6">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold">Daftar Gambar Slider</h1>
-            <div class="flex gap-2">
-                <a href="../index.php" class="bg-gray-500 text-white px-4 py-2 rounded">Kembali</a>
-                <a href="tambah.php" class="bg-green-600 text-white px-4 py-2 rounded">+ Tambah Gambar</a>
-            </div>
-        </div>
+<body class="bg-gray-100">
 
-        <table class="w-full text-left border-collapse">
-            <thead>
-                <tr class="bg-gray-200">
-                    <th class="p-3">Gambar</th>
-                    <th class="p-3">Urutan</th>
-                    <th class="p-3">Status</th>
-                    <th class="p-3">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach($slides as $row): ?>
-                <tr class="border-b hover:bg-gray-50">
-                    <td class="p-3">
-                        <img src="../../assets/image/<?= $row['image'] ?>" class="w-24 h-16 object-cover rounded shadow">
-                    </td>
-                    <td class="p-3"><?= $row['urutan'] ?></td>
-                    <td class="p-3">
-                        <?php if($row['is_active']): ?>
-                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Aktif</span>
-                        <?php else: ?>
-                            <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Mati</span>
-                        <?php endif; ?>
-                    </td>
-                    <td class="p-3">
-                        <a href="hapus.php?id=<?= $row['id'] ?>" onclick="return confirm('Yakin hapus?')" class="text-red-600 hover:text-red-900 font-bold text-sm">Hapus</a>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+    <nav class="bg-white shadow-md px-6 py-4 flex justify-between items-center">
+        <div class="font-bold text-xl text-green-700">CMS Bukit Jar'un</div>
+        <div class="flex items-center gap-4">
+            <span>Halo, <b><?= $_SESSION['username'] ?></b></span>
+            <a href="logout.php" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-6">
+        <h1 class="text-2xl font-bold mb-6 text-gray-700">Mau edit apa hari ini?</h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <a href="hero/index.php" class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition transform hover:-translate-y-1 border-l-4 border-blue-500">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-gray-800">Hero Slider</h2>
+                    <i class="fas fa-images text-3xl text-blue-200"></i>
+                </div>
+                <p class="text-gray-500 text-sm">Kelola gambar banner utama website.</p>
+            </a>
+
+            <a href="#" class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition transform hover:-translate-y-1 border-l-4 border-yellow-500 opacity-50 cursor-not-allowed">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-gray-800">Event List</h2>
+                    <i class="fas fa-calendar-check text-3xl text-yellow-200"></i>
+                </div>
+                <p class="text-gray-500 text-sm">Segera Hadir.</p>
+            </a>
+
+            <a href="#" class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition transform hover:-translate-y-1 border-l-4 border-green-500 opacity-50 cursor-not-allowed">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-gray-800">Info Lokasi</h2>
+                    <i class="fas fa-map-marked-alt text-3xl text-green-200"></i>
+                </div>
+                <p class="text-gray-500 text-sm">Segera Hadir.</p>
+            </a>
+
+        </div>
     </div>
+
 </body>
 </html>
