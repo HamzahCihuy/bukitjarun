@@ -149,27 +149,25 @@ $colors = [
 </section>
 
 <script>
-    // FUNGSI ACCORDION TOGGLE
+    // FUNGSI ACCORDION TOGGLE (DIPERBAIKI: TEKS TETAP, CUMA IKON PUTAR)
     function toggleForm() {
         const wrapper = document.getElementById('form-wrapper');
         const icon = document.getElementById('chevron-icon');
-        const btn = document.getElementById('btn-toggle-form');
+        // Kita tidak perlu ubah innerHTML tombol lagi
 
-        // Cek apakah sedang terbuka (max-height tidak 0)
+        // Cek apakah sedang terbuka
         if (wrapper.style.maxHeight) {
             // TUTUP
             wrapper.style.maxHeight = null;
             wrapper.classList.remove('opacity-100');
             wrapper.classList.add('opacity-0');
-            icon.style.transform = 'rotate(0deg)';
-            btn.innerHTML = '<span class="text-2xl group-hover:rotate-12 transition-transform">✍️</span><span>Tulis Pesan Rahasia</span><svg id="chevron-icon" class="w-5 h-5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>';
+            icon.style.transform = 'rotate(0deg)'; // Putar ikon balik
         } else {
             // BUKA
             wrapper.classList.remove('opacity-0');
             wrapper.classList.add('opacity-100');
             wrapper.style.maxHeight = wrapper.scrollHeight + "px";
-            icon.style.transform = 'rotate(180deg)';
-            btn.innerHTML = '<span class="text-2xl">❌</span><span>Batal Nulis</span>';
+            icon.style.transform = 'rotate(180deg)'; // Putar ikon ke bawah
         }
     }
 
