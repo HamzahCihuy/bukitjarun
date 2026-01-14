@@ -1,120 +1,89 @@
 <?php
+// --- AKTIFKAN LAPORAN ERROR PHP ---
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
-include '../../db/koneksi.php';
 
-// Cek apakah ID ada di URL?
-if (!isset($_GET['id'])) {
-    header("location:index.php");
-    exit();
+echo "<div style='font-family:monospace; background:#eee; padding:20px; border:1px solid #999;'>";
+echo "<h2 style='color:red;'>MODE DEBUGGING AKTIF</h2>";
+
+// 1. CEK FILE KONEKSI
+echo "1. Mengecek file koneksi... ";
+if (file_exists('../../db/koneksi.php')) {
+    include '../../db/koneksi.php';
+    echo "<span style='color:green;'>File Ditemukan.</span><br>";
+} else {
+    die("<span style='color:red;'>ERROR FATAL: File ../../db/koneksi.php TIDAK ADA!</span>");
 }
 
-$id = $_GET['id'];
-
-// Ambil Data Lama berdasarkan ID
-$stmt = $pdo->prepare("SELECT * FROM events WHERE id = ?");
-$stmt->execute([$id]);
-$data = $stmt->fetch();
-
-// Jika data tidak ditemukan, balik ke index
-if (!$data) {
-    header("location:index.php");
-    exit();
+// 2. CEK KONEKSI DATABASE
+echo "2. Mengecek status koneksi database (\$pdo)... ";
+if (isset($pdo)) {
+    echo "<span style='color:green;'>Terhubung.</span><br>";
+} else {
+    die("<span style='color:red;'>ERROR: Variabel \$pdo tidak ada. Cek isi file koneksi.php!</span>");
 }
 
-// PROSES UPDATE DATA
-if (isset($_POST['update'])) {
-    $title      = $_POST['title'];
-    $urutan     = $_POST['urutan'];
-    $mission    = $_POST['mission'];
-    $syarat     = $_POST['syarat'];
-    $color_pri  = $_POST['color_primary'];
-    $color_acc  = $_POST['color_accent'];
-    $reward_img = $_POST['reward_img'];
-    $bg_pattern = $_POST['bg_pattern_img'];
-
-    $sql = "UPDATE events SET 
-            title=?, urutan=?, mission=?, syarat=?, 
-            reward_img=?, bg_pattern_img=?, 
-            color_primary=?, color_accent=? 
-            WHERE id=?";
-            
-    $update = $pdo->prepare($sql);
-    $update->execute([$title, $urutan, $mission, $syarat, $reward_img, $bg_pattern, $color_pri, $color_acc, $id]);
-
-    header("location:index.php");
+// 3. CEK URL PARAMETER
+echo "3. Mengecek ID di URL... ";
+if (isset($_GET['id'])) {
+    $id = $_GET['id'];
+    echo "<span style='color:green;'>Ada. ID = <b>$id</b></span><br>";
+} else {
+    die("<span style='color:red;'>ERROR: ID tidak ditemukan di URL. Kamu membuka file ini langsung tanpa klik edit?</span>");
 }
+
+// 4. CEK DATA DI DATABASE
+echo "4. Mencari data di tabel 'events' dengan ID $id... <br>";
+try {
+    $stmt = $pdo->prepare("SELECT * FROM events WHERE id = ?");
+    $stmt->execute([$id]);
+    $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    echo "&nbsp;&nbsp;&nbsp;Hasil Query: ";
+    if ($data) {
+        echo "<span style='color:green;'>DATA DITEMUKAN!</span><br>";
+        echo "&nbsp;&nbsp;&nbsp;Judul Event: <b>" . htmlspecialchars($data['title']) . "</b><br>";
+    } else {
+        echo "<span style='color:red;'>DATA KOSONG (NULL)</span><br>";
+        die("<h3 style='color:red;'>KESIMPULAN: ID $id tidak ada di database. Sistem melempar kembali ke index.</h3>");
+    }
+} catch (Exception $e) {
+    die("<span style='color:red;'>ERROR QUERY: " . $e->getMessage() . "</span>");
+}
+
+echo "<hr><h3 style='color:green;'>KESIMPULAN: Semua Cek Lolos!</h3>";
+echo "Jika kamu melihat tulisan ini, berarti LOGIKA PHP BENAR.<br>";
+echo "Masalah redirect ke root kemungkinan besar karena <b>CACHE BROWSER</b>.<br>";
+echo "Silakan scroll ke bawah untuk melihat form edit.";
+echo "</div>";
+
+// --- SISA KODE ASLI (FORM) ---
+// Kita matikan proses UPDATE dulu biar fokus cek tampilan
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <title>Edit Event</title>
+    <title>DEBUG Edit Event</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen p-10">
-    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-3xl">
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-3xl border-4 border-green-500">
         <h2 class="text-2xl font-bold mb-6 text-gray-800 border-b pb-4">✏️ Edit Event: <?= htmlspecialchars($data['title']) ?></h2>
         
         <form method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="col-span-2 bg-yellow-100 p-4 rounded text-center font-bold">
+                FORM INI MUNCUL BERARTI DATA ADA.
+            </div>
             
-            <div class="space-y-4">
+             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-bold mb-1">Judul Event</label>
-                    <input type="text" name="title" value="<?= htmlspecialchars($data['title']) ?>" required class="w-full border p-2 rounded focus:ring-2 focus:ring-blue-400">
-                </div>
-                <div>
-                    <label class="block text-sm font-bold mb-1">Urutan</label>
-                    <input type="number" name="urutan" value="<?= $data['urutan'] ?>" class="w-full border p-2 rounded">
-                </div>
-                
-                <div class="p-4 bg-gray-50 rounded border">
-                    <label class="block text-sm font-bold mb-2">🎁 Link Icon Hadiah</label>
-                    <input type="url" name="reward_img" value="<?= htmlspecialchars($data['reward_img']) ?>" required class="w-full border p-2 rounded text-sm">
-                    <div class="mt-2 flex items-center gap-2">
-                        <span class="text-xs text-gray-500">Preview:</span>
-                        <img src="<?= $data['reward_img'] ?>" class="w-8 h-8 object-contain bg-white border rounded">
-                    </div>
-                </div>
-
-                <div class="p-4 bg-gray-50 rounded border">
-                    <label class="block text-sm font-bold mb-2">🎨 Link Background Pattern</label>
-                    <input type="url" name="bg_pattern_img" value="<?= htmlspecialchars($data['bg_pattern_img']) ?>" required class="w-full border p-2 rounded text-sm">
+                    <input type="text" name="title" value="<?= htmlspecialchars($data['title']) ?>" class="w-full border p-2 rounded">
                 </div>
             </div>
-
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-bold mb-1">Misi Utama</label>
-                    <textarea name="mission" required class="w-full border p-2 rounded h-20"><?= htmlspecialchars($data['mission']) ?></textarea>
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-bold mb-1">Syarat & Ketentuan</label>
-                    <textarea name="syarat" required class="w-full border p-2 rounded h-28 bg-yellow-50"><?= htmlspecialchars($data['syarat']) ?></textarea>
-                    <p class="text-xs text-red-500 mt-1">*Pisahkan dengan ENTER.</p>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-bold mb-1">Warna Utama</label>
-                        <input type="color" name="color_primary" value="<?= $data['color_primary'] ?>" class="w-full h-10 cursor-pointer rounded">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold mb-1">Warna Aksen</label>
-                        <input type="color" name="color_accent" value="<?= $data['color_accent'] ?>" class="w-full h-10 cursor-pointer rounded">
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-span-1 md:col-span-2 flex gap-3 mt-4 pt-4 border-t">
-                <button type="submit" name="update" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-bold w-full shadow-lg">
-                    Simpan Perubahan
-                </button>
-                <a href="index.php" class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 font-bold w-1/3 text-center">
-                    Batal
-                </a>
-            </div>
-
         </form>
     </div>
 </body>
