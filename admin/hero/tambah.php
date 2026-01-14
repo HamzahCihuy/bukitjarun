@@ -2,12 +2,6 @@
 session_start();
 include '../../db/koneksi.php';
 
-// Cek Login
-if (!isset($_SESSION['status']) || $_SESSION['status'] != "login") {
-    header("location:../login.php");
-    exit();
-}
-
 if (isset($_POST['simpan'])) {
     $urutan = $_POST['urutan'];
     // AMBIL LANGSUNG SEBAGAI STRING/TEXT
