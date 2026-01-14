@@ -1,6 +1,5 @@
 <?php
 session_start();
-
 ?>
 
 <!DOCTYPE html>
@@ -35,12 +34,12 @@ session_start();
                 <p class="text-gray-500 text-sm">Kelola gambar banner utama website.</p>
             </a>
 
-            <a href="event/index.php" class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition transform hover:-translate-y-1 border-l-4 border-yellow-500 opacity-50 cursor-not-allowed">
+            <a href="event/index.php" class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition transform hover:-translate-y-1 border-l-4 border-yellow-500">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-xl font-bold text-gray-800">Event List</h2>
                     <i class="fas fa-calendar-check text-3xl text-yellow-200"></i>
                 </div>
-                <p class="text-gray-500 text-sm">Segera Hadir.</p>
+                <p class="text-gray-500 text-sm">Kelola misi, hadiah, dan syarat event.</p>
             </a>
 
             <a href="#" class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition transform hover:-translate-y-1 border-l-4 border-green-500 opacity-50 cursor-not-allowed">
