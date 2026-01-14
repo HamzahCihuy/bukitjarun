@@ -224,62 +224,68 @@ $list_event = $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
         };
 
-        async function verifikasiVideo(id) {
-            const inputNama = document.getElementById('nama-' + id).value;
-            const inputLink = document.getElementById('link-' + id).value;
-            const btnVerifikasi = document.querySelector(`#form-claim-${id} button`);
-            const loadingIcon = document.getElementById('loading-' + id);
-            const divFail = document.getElementById('fail-claim-' + id);
-            const textFail = document.getElementById('error-msg-' + id);
-            const divForm = document.getElementById('form-claim-' + id);
+       async function verifikasiVideo(id) {
+        const inputNama = document.getElementById('nama-' + id).value;
+        
+        // --- TAMBAHAN BARU: AMBIL NO HP ---
+        const inputHP = document.getElementById('hp-' + id).value; 
+        
+        // AMBIL SEMUA INPUT VIDEO
+        const videoInputs = document.querySelectorAll(`.input-video-${id}`);
+        let listLinks = [];
+        let kosong = false;
 
-            if (!inputNama || !inputLink) {
-                alert("Mohon isi Nama dan Link Video dulu ya!");
-                return;
-            }
+        videoInputs.forEach(input => {
+            if(input.value.trim() === "") { kosong = true; }
+            listLinks.push(input.value.trim());
+        });
 
-            btnVerifikasi.disabled = true;
-            btnVerifikasi.classList.add('opacity-50', 'cursor-not-allowed');
-            loadingIcon.classList.remove('hidden');
+        const btnVerifikasi = document.querySelector(`#form-claim-${id} button`);
+        const loadingIcon = document.getElementById('loading-' + id);
+        // ... variabel lain tetap sama ...
 
-            try {
-                // 1. CEK KE AI (PYTHON)
-                const response = await fetch('https://my-ai-api-production-a4c4.up.railway.app/cek-video', { 
+        // --- UPDATE VALIDASI: CEK HP JUGA ---
+        if (!inputNama || !inputHP || kosong) {
+            alert("Mohon lengkapi Nama, Nomor HP, dan SEMUA Link Video!");
+            return;
+        }
+
+        // ... kode disable button & loading tetap sama ...
+
+        try {
+            // 1. KIRIM KE PYTHON (AI)
+            // (Tidak perlu kirim No HP ke Python, karena AI tidak butuh)
+            const response = await fetch('https://my-ai-api-production-a4c4.up.railway.app/cek-video', { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    urls: listLinks,
+                    misi_id: id,
+                    nama: inputNama
+                })
+            });
+
+            // ... proses response Python tetap sama ...
+            
+            if (data.status === "VALID") {
+                
+                // 2. SIMPAN KE DATABASE PHP
+                const combinedLinks = listLinks.join(', ');
+                const judulMisi = document.querySelector(`#modal-${id} h2`).innerText;
+
+                const saveResponse = await fetch('api-save-ticket.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        url: inputLink,
-                        misi_id: id,  // Mengirim ID Database
-                        nama: inputNama
+                        name: inputNama,
+                        no_hp: inputHP, // <--- KIRIM NO HP KE SINI
+                        mission: judulMisi,
+                        video_hash: data.video_hash,
+                        link: combinedLinks
                     })
                 });
 
-                const textPython = await response.text(); 
-                let data;
-                try {
-                    data = JSON.parse(textPython); 
-                } catch (e) {
-                    throw new Error("SERVER AI ERROR: " + textPython);
-                }
-
-                if (!response.ok) throw new Error("Koneksi Gagal");
-                
-                if (data.status === "VALID") {
-                    
-                    // 2. SIMPAN KE DATABASE (PHP)
-                    const judulMisi = document.querySelector(`#modal-${id} h2`).innerText;
-
-                    const saveResponse = await fetch('api-save-ticket.php', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            name: inputNama,
-                            mission: judulMisi,
-                            video_hash: data.video_hash,
-                            link: inputLink
-                        })
-                    });
-
+                // ... sisa kode ke bawah tetap sama ...
                     const saveResult = await saveResponse.json();
 
                     if(saveResult.status === 'success') {
@@ -324,4 +330,5 @@ $list_event = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </script>
 </body>
 </html>
+
 
