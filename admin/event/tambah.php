@@ -2,29 +2,6 @@
 session_start();
 include '../../db/koneksi.php';
 
-// Fungsi Helper untuk Upload Gambar
-function uploadGambar($fileInputName, $prefix) {
-    $nama_file = $_FILES[$fileInputName]['name'];
-    $tmp_file  = $_FILES[$fileInputName]['tmp_name'];
-    $error     = $_FILES[$fileInputName]['error'];
-
-    // Jika user tidak upload gambar (error 4), kembalikan null
-    if ($error === 4) return null;
-
-    $ekstensi  = pathinfo($nama_file, PATHINFO_EXTENSION);
-    // Nama unik: icon_170222_judul.png
-    $nama_baru = $prefix . "_" . time() . "." . $ekstensi;
-    
-    // Upload ke folder assets/image
-    $destinasi = "../../assets/image/" . $nama_baru;
-    
-    if (move_uploaded_file($tmp_file, $destinasi)) {
-        // Kita simpan path lengkapnya agar frontend tidak perlu diubah
-        return "assets/image/" . $nama_baru;
-    }
-    return null;
-}
-
 if (isset($_POST['simpan'])) {
     $title      = $_POST['title'];
     $urutan     = $_POST['urutan'];
@@ -32,21 +9,16 @@ if (isset($_POST['simpan'])) {
     $syarat     = $_POST['syarat'];
     $color_pri  = $_POST['color_primary'];
     $color_acc  = $_POST['color_accent'];
+    
+    // AMBIL LINK LANGSUNG DARI INPUT TEXT
+    $reward_img = $_POST['reward_img'];
+    $bg_pattern = $_POST['bg_pattern_img'];
 
-    // 1. Upload Reward Icon
-    $path_reward = uploadGambar('reward_img', 'icon');
-    // Jika gagal upload, pakai gambar default (opsional)
-    if (!$path_reward) $path_reward = "assets/image/default_icon.png";
-
-    // 2. Upload Pattern Background
-    $path_pattern = uploadGambar('bg_pattern_img', 'pattern');
-    if (!$path_pattern) $path_pattern = "assets/image/default_pattern.png";
-
-    // 3. Simpan ke Database
+    // Simpan ke Database
     $sql = "INSERT INTO events (title, mission, syarat, reward_img, bg_pattern_img, color_primary, color_accent, urutan) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$title, $mission, $syarat, $path_reward, $path_pattern, $color_pri, $color_acc, $urutan]);
+    $stmt->execute([$title, $mission, $syarat, $reward_img, $bg_pattern, $color_pri, $color_acc, $urutan]);
 
     header("location:index.php");
 }
@@ -62,7 +34,7 @@ if (isset($_POST['simpan'])) {
     <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-3xl">
         <h2 class="text-2xl font-bold mb-6 text-gray-800 border-b pb-4">📝 Buat Event Baru</h2>
         
-        <form method="POST" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <form method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             <div class="space-y-4">
                 <div>
@@ -75,15 +47,15 @@ if (isset($_POST['simpan'])) {
                 </div>
                 
                 <div class="p-4 bg-gray-50 rounded border">
-                    <label class="block text-sm font-bold mb-2">🎁 Icon Hadiah (Reward)</label>
-                    <input type="file" name="reward_img" required class="w-full text-sm">
-                    <p class="text-xs text-gray-400 mt-1">Format: PNG (Transparan) disarankan.</p>
+                    <label class="block text-sm font-bold mb-2">🎁 Link Icon Hadiah</label>
+                    <input type="url" name="reward_img" required class="w-full border p-2 rounded text-sm" placeholder="https://img.icons8.com/...">
+                    <p class="text-xs text-gray-400 mt-1">Paste link gambar (PNG/JPG) disini.</p>
                 </div>
 
                 <div class="p-4 bg-gray-50 rounded border">
-                    <label class="block text-sm font-bold mb-2">🎨 Background Pattern</label>
-                    <input type="file" name="bg_pattern_img" required class="w-full text-sm">
-                    <p class="text-xs text-gray-400 mt-1">Icon kecil warna putih/transparan untuk hiasan.</p>
+                    <label class="block text-sm font-bold mb-2">🎨 Link Background Pattern</label>
+                    <input type="url" name="bg_pattern_img" required class="w-full border p-2 rounded text-sm" placeholder="https://img.icons8.com/...">
+                    <p class="text-xs text-gray-400 mt-1">Paste link pattern background disini.</p>
                 </div>
             </div>
 
