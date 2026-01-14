@@ -75,7 +75,7 @@ if (empty($slides)) {
 <script>
     // Ambil data gambar dari PHP ke JS
     const images = <?= json_encode($slides) ?>;
-    const pathPrefix = 'assets/images/'; // Sesuaikan jika folder gambar beda
+    const pathPrefix = 'assets/image/'; // Sesuaikan jika folder gambar beda
     
     let currentIndex = 0;
     const carouselContent = document.getElementById('carouselContent');
@@ -146,3 +146,4 @@ if (empty($slides)) {
 
     document.addEventListener('DOMContentLoaded', initSlider);
 </script>
+
