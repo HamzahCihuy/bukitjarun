@@ -51,9 +51,7 @@ $sisanya = array_slice($champions, 3);
     <div class="absolute inset-0 opacity-[0.4]" 
          style="background-image: radial-gradient(#17FFB2 2px, transparent 2px); background-size: 24px 24px;">
     </div>
-    
-    <div class="absolute top-0 right-0 w-96 h-96 bg-[#17FFB2] rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-pulse"></div>
-    <div class="absolute bottom-0 left-0 w-96 h-96 bg-yellow-300 rounded-full mix-blend-multiply filter blur-[100px] opacity-30 animate-pulse" style="animation-delay: 2s;"></div>
+
 
     <div class="container mx-auto px-4 relative z-10 max-w-5xl">
         
