@@ -169,6 +169,11 @@ $list_event = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Nama Kamu</label>
                                     <input type="text" id="nama-<?= $row['id'] ?>" class="w-full px-4 py-3 rounded-xl bg-gray-50 border-2 border-gray-100 focus:border-[#17FFB2] focus:bg-white outline-none transition font-bold text-theme" placeholder="Isi nama...">
                                 </div>
+                                <div class="mt-4">
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Nomor HP / WhatsApp</label>
+                                      <input type="tel" id="hp-<?= $row['id'] ?>" class="w-full px-4 py-3 rounded-xl bg-gray-50 border-2 border-gray-100 focus:border-[#17FFB2] focus:bg-white outline-none transition font-bold text-theme" placeholder="Contoh: 081234567890">
+                                      <p class="text-[10px] text-gray-400 mt-1 ml-1">*Wajib aktif WA untuk konfirmasi hadiah.</p>
+                                </div>
                                 
                                 <div>
                                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Link Video TikTok/IG</label>
@@ -319,3 +324,4 @@ $list_event = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </script>
 </body>
 </html>
+
