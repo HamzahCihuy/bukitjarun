@@ -33,6 +33,16 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             
+             <a href="input/input-ticket.php" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition transform hover:-translate-y-1 border-l-8 border-purple-500 group">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-gray-800 group-hover:text-purple-600 transition">Input Voucher/h2>
+                    <div class="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center">
+                        <i class="fas fa-ticket-alt text-xl text-purple-500"></i>
+                    </div>
+                </div>
+                <p class="text-gray-500 text-sm">Input data voucher wisatawan.</p>
+            </a>
+            
             <a href="hero/index.php" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition transform hover:-translate-y-1 border-l-8 border-blue-500 group">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-xl font-bold text-gray-800 group-hover:text-blue-600 transition">Hero Slider</h2>
@@ -51,16 +61,6 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
                     </div>
                 </div>
                 <p class="text-gray-500 text-sm">Kelola misi, hadiah, dan syarat event.</p>
-            </a>
-
-            <a href="input/input-ticket.php" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition transform hover:-translate-y-1 border-l-8 border-purple-500 group">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-xl font-bold text-gray-800 group-hover:text-purple-600 transition">Input Tiket</h2>
-                    <div class="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center">
-                        <i class="fas fa-ticket-alt text-xl text-purple-500"></i>
-                    </div>
-                </div>
-                <p class="text-gray-500 text-sm">Buat tiket manual tanpa verifikasi AI.</p>
             </a>
 
             <a href="lokasi/index.php" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition transform hover:-translate-y-1 border-l-8 border-green-500 group">
