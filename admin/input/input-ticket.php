@@ -1,6 +1,9 @@
 <?php
 session_start();
-
+if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
+    header("Location: index.php");
+    exit;
+}
 // 1. KONEKSI DATABASE
 // Karena file ini ada di admin/input/input-ticket.php, kita perlu mundur 2 folder (../../)
 if (file_exists('../../db/koneksi.php')) { include '../../db/koneksi.php'; }
