@@ -1,6 +1,9 @@
 <?php
 session_start();
-
+if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
+    header("Location: index.php");
+    exit;
+}
 // Cek session login (Opsional, aktifkan jika sudah ada sistem login)
 // if (!isset($_SESSION['username'])) { header("Location: login.php"); exit; }
 ?>
