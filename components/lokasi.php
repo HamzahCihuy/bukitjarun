@@ -148,4 +148,3 @@ if (!$lokasi) {
     
 </section>
 
-<?php include 'components/wave-white-top.php'; ?>
