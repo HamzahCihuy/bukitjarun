@@ -1,0 +1,99 @@
+<footer class="relative bg-[#064E3B] text-white pt-20 pb-10 mt-20 font-fun">
+    
+    <div class="absolute top-0 left-0 w-full overflow-hidden leading-[0] transform -translate-y-full">
+        <svg class="relative block w-[calc(100%+1.3px)] h-[150px]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" 
+                  class="fill-[#064E3B]"></path>
+        </svg>
+    </div>
+
+    <div class="absolute inset-0 opacity-5 pointer-events-none" 
+         style="background-image: url('https://www.transparenttextures.com/patterns/cubes.png');">
+    </div>
+
+    <div class="container mx-auto px-6 relative z-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+            
+            <div class="space-y-4">
+                <div class="flex items-center gap-2">
+                    <img src="assets/image/logojarun.png" alt="Logo" class="h-12 brightness-0 invert">
+                </div>
+                <p class="text-slate-300 text-sm leading-relaxed">
+                    Destinasi wisata alam terbaik dengan pemandangan menakjubkan. Tempat healing paling asik buat kamu, keluarga, dan bestie! 🌿✨
+                </p>
+                <div class="pt-2">
+                    <span class="inline-block bg-[#17FFB2] text-[#064E3B] text-xs font-bold px-3 py-1 rounded-full">
+                        Buka Setiap Hari
+                    </span>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-xl font-bold mb-6 text-[#17FFB2]">Jelajahi</h3>
+                <ul class="space-y-3 text-sm text-slate-300">
+                    <li><a href="#event-section" class="hover:text-[#17FFB2] hover:translate-x-2 transition-transform inline-block">🎉 Event Seru</a></li>
+                    <li><a href="#leaderboard" class="hover:text-[#17FFB2] hover:translate-x-2 transition-transform inline-block">🏆 Leaderboard</a></li>
+                    <li><a href="#menfess" class="hover:text-[#17FFB2] hover:translate-x-2 transition-transform inline-block">💌 Menfess Netizen</a></li>
+                    <li><a href="#" class="hover:text-[#17FFB2] hover:translate-x-2 transition-transform inline-block">🗺️ Peta Lokasi</a></li>
+                    <li><a href="#" class="hover:text-[#17FFB2] hover:translate-x-2 transition-transform inline-block">🎟️ Pesan Tiket</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h3 class="text-xl font-bold mb-6 text-[#17FFB2]">Hubungi Kami</h3>
+                <ul class="space-y-4 text-sm text-slate-300">
+                    <li class="flex items-start gap-3">
+                        <i class="fas fa-map-marker-alt text-[#17FFB2] mt-1"></i>
+                        <span>Jl. Bukit Indah No. 99, Kecamatan Sukasari, Kabupaten Bogor, Jawa Barat.</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i class="fab fa-whatsapp text-[#17FFB2] text-lg"></i>
+                        <a href="https://wa.me/6281234567890" target="_blank" class="hover:text-white transition">
+                            +62 812-3456-7890
+                        </a>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i class="far fa-envelope text-[#17FFB2]"></i>
+                        <a href="mailto:hello@bukitjarun.com" class="hover:text-white transition">
+                            hello@bukitjarun.com
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div>
+                <h3 class="text-xl font-bold mb-6 text-[#17FFB2]">Ikuti Keseruan!</h3>
+                
+                <div class="flex gap-3 mb-8">
+                    <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#E1306C] hover:text-white transition-all duration-300 hover:scale-110">
+                        <i class="fab fa-instagram text-xl"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-black hover:text-white transition-all duration-300 hover:scale-110">
+                        <i class="fab fa-tiktok text-xl"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#FF0000] hover:text-white transition-all duration-300 hover:scale-110">
+                        <i class="fab fa-youtube text-xl"></i>
+                    </a>
+                </div>
+
+                <p class="text-xs text-slate-400 mb-3">Dapetin info promo & event terbaru:</p>
+                <div class="relative">
+                    <input type="email" placeholder="Email kamu..." class="w-full bg-white/10 border border-white/20 rounded-xl py-3 px-4 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-[#17FFB2] transition">
+                    <button class="absolute right-1 top-1 bg-[#17FFB2] text-[#064E3B] p-2 rounded-lg hover:bg-white transition">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-slate-400 text-sm text-center md:text-left">
+                &copy; <?= date('Y') ?> <b>Bukit Jar'un</b>. All Rights Reserved.
+            </p>
+            <p class="text-slate-500 text-xs flex items-center gap-1">
+                Made with <span class="text-red-500 animate-pulse">❤</span> by Tim IT Jar'un
+            </p>
+        </div>
+    </div>
+</footer>
