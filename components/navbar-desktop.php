@@ -17,9 +17,14 @@
             display: none !important;
         }
     }
+
+    /* Class untuk menyembunyikan navbar (Digunakan oleh JS) */
+    .nav-hidden {
+        transform: translateY(-100%);
+    }
 </style>
 
-<nav class="desktop-only-nav bg-white z-40 pt-6 pb-6 shadow-[0_4px_20px_rgba(0,0,0,0.05)] relative sticky top-0">
+<nav id="desktop-navbar" class="desktop-only-nav bg-white z-40 pt-6 pb-6 shadow-[0_4px_20px_rgba(0,0,0,0.05)] sticky top-0 transition-transform duration-300 ease-in-out">
     <div class="container mx-auto px-8">
         
         <div class="grid grid-cols-3 items-center mb-6">
@@ -89,3 +94,25 @@
         </div>
     </div>
 </nav>
+
+<script>
+    let lastScrollTop = 0;
+    const navbar = document.getElementById('desktop-navbar');
+
+    window.addEventListener('scroll', function() {
+        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        // Cek jika scroll lebih dari 0 (agar tidak error di safari mobile bounce)
+        if (scrollTop > 0) {
+            if (scrollTop > lastScrollTop) {
+                // Scroll ke BAWAH -> Sembunyikan Navbar
+                navbar.classList.add('nav-hidden');
+            } else {
+                // Scroll ke ATAS -> Tampilkan Navbar
+                navbar.classList.remove('nav-hidden');
+            }
+        }
+        
+        lastScrollTop = scrollTop;
+    });
+</script>
