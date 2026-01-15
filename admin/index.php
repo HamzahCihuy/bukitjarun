@@ -83,6 +83,16 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                 <p class="text-gray-500 text-sm">Hapus pesan menfess yang tidak pantas.</p>
             </a>
 
+            <a href="footer/index.php" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition transform hover:-translate-y-1 border-l-8 border-slate-700 group">
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold text-gray-800 group-hover:text-slate-600 transition">Footer Setting</h2>
+        <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center">
+            <i class="fas fa-shoe-prints text-xl text-slate-700"></i>
+        </div>
+    </div>
+    <p class="text-gray-500 text-sm">Edit kontak, alamat, dan link sosmed.</p>
+</a>
+
         </div>
     </div>
 
