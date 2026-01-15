@@ -133,4 +133,3 @@
         </div>
     </div>
 </section>
-<?php include 'components/wave-white-bottom.php'; ?>
