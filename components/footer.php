@@ -1,3 +1,9 @@
+<?php
+// Ambil data Settings dari Database
+if (!isset($pdo)) { include 'db/koneksi.php'; }
+$footer = $pdo->query("SELECT * FROM footer_settings WHERE id=1")->fetch(PDO::FETCH_ASSOC);
+?>
+
 <footer class="relative bg-[#064E3B] text-white pt-20 pb-10 mt-20 font-fun">
     
     <div class="absolute top-0 left-0 w-full overflow-hidden leading-[0] transform -translate-y-full">
@@ -19,11 +25,11 @@
                     <img src="assets/image/logojarun.png" alt="Logo" class="h-12 brightness-0 invert">
                 </div>
                 <p class="text-slate-300 text-sm leading-relaxed">
-                    Destinasi wisata alam terbaik dengan pemandangan menakjubkan. Tempat healing paling asik buat kamu, keluarga, dan bestie! 🌿✨
+                    <?= nl2br(htmlspecialchars($footer['description'])) ?>
                 </p>
                 <div class="pt-2">
                     <span class="inline-block bg-[#17FFB2] text-[#064E3B] text-xs font-bold px-3 py-1 rounded-full">
-                        Buka Setiap Hari
+                        Buka: <?= htmlspecialchars($footer['opening_hours']) ?>
                     </span>
                 </div>
             </div>
@@ -34,7 +40,6 @@
                     <li><a href="#event-section" class="hover:text-[#17FFB2] hover:translate-x-2 transition-transform inline-block">🎉 Event Seru</a></li>
                     <li><a href="#leaderboard" class="hover:text-[#17FFB2] hover:translate-x-2 transition-transform inline-block">🏆 Leaderboard</a></li>
                     <li><a href="#menfess" class="hover:text-[#17FFB2] hover:translate-x-2 transition-transform inline-block">💌 Menfess Netizen</a></li>
-                    <li><a href="#" class="hover:text-[#17FFB2] hover:translate-x-2 transition-transform inline-block">🗺️ Peta Lokasi</a></li>
                     <li><a href="#" class="hover:text-[#17FFB2] hover:translate-x-2 transition-transform inline-block">🎟️ Pesan Tiket</a></li>
                 </ul>
             </div>
@@ -43,19 +48,19 @@
                 <h3 class="text-xl font-bold mb-6 text-[#17FFB2]">Hubungi Kami</h3>
                 <ul class="space-y-4 text-sm text-slate-300">
                     <li class="flex items-start gap-3">
-                        <i class="fas fa-map-marker-alt text-[#17FFB2] mt-1"></i>
-                        <span>Jl. Bukit Indah No. 99, Kecamatan Sukasari, Kabupaten Bogor, Jawa Barat.</span>
+                        <i class="fas fa-map-marker-alt text-[#17FFB2] mt-1 shrink-0"></i>
+                        <span><?= nl2br(htmlspecialchars($footer['address'])) ?></span>
                     </li>
                     <li class="flex items-center gap-3">
                         <i class="fab fa-whatsapp text-[#17FFB2] text-lg"></i>
-                        <a href="https://wa.me/6281234567890" target="_blank" class="hover:text-white transition">
-                            +62 812-3456-7890
+                        <a href="https://wa.me/<?= htmlspecialchars($footer['whatsapp']) ?>" target="_blank" class="hover:text-white transition">
+                            +<?= htmlspecialchars($footer['whatsapp']) ?>
                         </a>
                     </li>
                     <li class="flex items-center gap-3">
                         <i class="far fa-envelope text-[#17FFB2]"></i>
-                        <a href="mailto:hello@bukitjarun.com" class="hover:text-white transition">
-                            hello@bukitjarun.com
+                        <a href="mailto:<?= htmlspecialchars($footer['email']) ?>" class="hover:text-white transition">
+                            <?= htmlspecialchars($footer['email']) ?>
                         </a>
                     </li>
                 </ul>
@@ -65,15 +70,23 @@
                 <h3 class="text-xl font-bold mb-6 text-[#17FFB2]">Ikuti Keseruan!</h3>
                 
                 <div class="flex gap-3 mb-8">
-                    <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#E1306C] hover:text-white transition-all duration-300 hover:scale-110">
+                    <?php if($footer['link_instagram']): ?>
+                    <a href="<?= htmlspecialchars($footer['link_instagram']) ?>" target="_blank" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#E1306C] hover:text-white transition-all duration-300 hover:scale-110">
                         <i class="fab fa-instagram text-xl"></i>
                     </a>
-                    <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-black hover:text-white transition-all duration-300 hover:scale-110">
+                    <?php endif; ?>
+
+                    <?php if($footer['link_tiktok']): ?>
+                    <a href="<?= htmlspecialchars($footer['link_tiktok']) ?>" target="_blank" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-black hover:text-white transition-all duration-300 hover:scale-110">
                         <i class="fab fa-tiktok text-xl"></i>
                     </a>
-                    <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#FF0000] hover:text-white transition-all duration-300 hover:scale-110">
+                    <?php endif; ?>
+
+                    <?php if($footer['link_youtube']): ?>
+                    <a href="<?= htmlspecialchars($footer['link_youtube']) ?>" target="_blank" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#FF0000] hover:text-white transition-all duration-300 hover:scale-110">
                         <i class="fab fa-youtube text-xl"></i>
                     </a>
+                    <?php endif; ?>
                 </div>
 
                 <p class="text-xs text-slate-400 mb-3">Dapetin info promo & event terbaru:</p>
