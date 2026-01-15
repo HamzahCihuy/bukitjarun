@@ -99,7 +99,7 @@ $colors = [
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
             </button>
 
-            <div id="menfess-wall" class="flex flex-col flex-wrap content-start gap-4 md:gap-6 overflow-x-auto py-10 px-4 md:px-8 no-scrollbar scroll-smooth h-[550px] md:h-[650px]">
+            <div id="menfess-wall" class="flex flex-col flex-wrap content-start gap-4 md:gap-6 overflow-x-auto py-10 px-4 md:px-8 no-scrollbar scroll-smooth h-[550px] md:h-[px]">
                 
                 <?php if(empty($list_menfess)): ?>
                     <div class="bg-white p-10 rounded-2xl border-2 border-dashed border-slate-300 text-center w-full md:w-[320px] mx-auto">
