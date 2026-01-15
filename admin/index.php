@@ -35,7 +35,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
             
              <a href="input/input-ticket.php" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition transform hover:-translate-y-1 border-l-8 border-purple-500 group">
                 <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-xl font-bold text-gray-800 group-hover:text-purple-600 transition">Input Voucher/h2>
+                    <h2 class="text-xl font-bold text-gray-800 group-hover:text-purple-600 transition">Input Voucher</h2>
                     <div class="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center">
                         <i class="fas fa-ticket-alt text-xl text-purple-500"></i>
                     </div>
