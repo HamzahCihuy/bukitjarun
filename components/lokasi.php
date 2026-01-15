@@ -145,6 +145,8 @@ if (!$lokasi) {
 
         </div>
     </div>
-    
+
+    <?php include 'components/wave-white-bottom.php'; ?>
 </section>
+
 
