@@ -1,6 +1,9 @@
 <?php
 session_start();
-
+if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
+    header("Location: index.php");
+    exit;
+}
 // 1. KONEKSI DATABASE
 // Sesuaikan path ini dengan struktur folder kamu. 
 // Jika admin/menfess/index.php, berarti mundur 2 langkah ke root (../../)
