@@ -1,5 +1,9 @@
 <?php
 session_start();
+if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
+    header("Location: index.php");
+    exit;
+}
 include '../../db/koneksi.php';
 
 $stmt = $pdo->query("SELECT * FROM hero_slides ORDER BY urutan ASC");
