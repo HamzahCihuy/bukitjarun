@@ -38,7 +38,7 @@ try {
     }
 
     // 4. GENERATE KODE UNIK
-    $kode = "JARUN-" . strtoupper(bin2hex(random_bytes(3)));
+   $kode = (string) rand(100000, 999999);
 
     // 5. SIMPAN DATA (INSERT)
     // Gunakan placeholder (?) untuk keamanan maksimal
@@ -59,3 +59,4 @@ try {
     echo json_encode(['status' => 'error', 'msg' => 'Database Error: ' . $e->getMessage()]);
 }
 ?>
+
