@@ -52,32 +52,50 @@ try {
     
     if ($stmt->execute([$kode, $nama, $hp, $misi, $link, $hash])) {
         
-        // --- MODIFIKASI FONNTE: KIRIM NOTIF WA ---
+// ... (Bagian atas kode kamu tetap sama) ...
         
-        // Format Pesan yang Menarik
-        $pesanWA = "*SELAMAT! MISI BERHASIL 🌲*\n\n";
-        $pesanWA .= "Halo Kak *$nama*, video kamu keren banget dan lolos verifikasi AI! 🤖✨\n\n";
-        $pesanWA .= "Ini Kode Voucher Makan Gratis kamu:\n";
-        $pesanWA .= "👇👇👇\n\n";
-        $pesanWA .= "*" . $kode . "*\n\n";
-        $pesanWA .= "👆👆👆\n";
-        $pesanWA .= "Tunjukkan chat ini ke panitia di Gate Jar'un untuk klaim hadiahmu.\n\n";
-        $pesanWA .= "_Jangan lupa screenshot jaga-jaga kalau sinyal hilang!_ 😉\n";
-        $pesanWA .= "~ Admin Bukit Jar'un";
+        if ($stmt->execute([$kode, $nama, $hp, $misi, $link, $hash])) {
+       
+            // --- MODIFIKASI DINAMIS (TEMPLATE DARI DB) ---
+       
+            // 1. Ambil Template dari Database
+            $template_pesan = "";
+            try {
+                $stmt_tpl = $pdo->prepare("SELECT setting_value FROM settings WHERE setting_key = 'wa_template_success'");
+                $stmt_tpl->execute();
+                $data_tpl = $stmt_tpl->fetch(PDO::FETCH_ASSOC);
+                $template_pesan = $data_tpl['setting_value'] ?? '';
+            } catch (Exception $e) {}
 
-        // Eksekusi Kirim (Target No HP Peserta)
-        // Fungsi ini akan otomatis mengubah 08xx jadi 628xx
-        kirimPesanFonnte($hp, $pesanWA);
+            // 2. Fallback (Jaga-jaga kalau admin belum set template)
+            if (empty($template_pesan)) {
+                $template_pesan = "*SELAMAT! MISI {misi} BERHASIL*\n\nHalo *{nama}*, ini kode vouchermu: *{kode}*";
+            }
 
-        // -----------------------------------------
+            // 3. Replace Shortcode ({nama} jadi Budi, dst)
+            $replacements = [
+                '{nama}' => $nama,
+                '{kode}' => $kode,
+                '{misi}' => $misi,
+                '{link}' => $link,
+                '{hp}'   => $hp
+            ];
 
-        echo json_encode(['status' => 'success', 'generated_code' => $kode]);
+            // Tukar {key} dengan value aslinya
+            $pesanWA = str_replace(array_keys($replacements), array_values($replacements), $template_pesan);
 
-    } else {
-        echo json_encode(['status' => 'error', 'msg' => 'Gagal menyimpan data ke database.']);
-    }
+            // 4. Kirim WA
+            kirimPesanFonnte($hp, $pesanWA);
+
+            // -----------------------------------------
+
+            echo json_encode(['status' => 'success', 'generated_code' => $kode]);
+
+        } else {
+            // ... (Kode error handling kamu tetap sama) ...
 
 } catch (PDOException $e) {
     echo json_encode(['status' => 'error', 'msg' => 'Database Error: ' . $e->getMessage()]);
 }
 ?>
+
