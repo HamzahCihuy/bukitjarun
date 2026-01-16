@@ -1,19 +1,18 @@
 <?php
 header('Content-Type: application/json');
 
-// 1. INCLUDE KONEKSI (Pastikan file ini isinya koneksi PDO)
+// INCLUDE KONEKSI & FUNGSI WA
 if (file_exists('db/koneksi.php')) { include 'db/koneksi.php'; } 
 elseif (file_exists('koneksi.php')) { include 'koneksi.php'; } 
 else { echo json_encode(['status' => 'error', 'msg' => 'Koneksi DB hilang']); exit; }
 
-// Pastikan variabel koneksi bernama $pdo. Jika di file koneksi namanya $conn, kita alias-kan.
+// INCLUDE FILE WA YANG BARU DIBUAT
+include 'send_wa.php';
+
 if (!isset($pdo) && isset($conn)) { $pdo = $conn; }
 
-// Terima Data JSON
 $data = json_decode(file_get_contents("php://input"), true);
 
-// 2. AMBIL DATA (TIDAK PERLU REAL_ESCAPE_STRING DI PDO)
-// PDO menggunakan "Prepared Statements" yang otomatis aman dari SQL Injection.
 $nama = $data['name'] ?? 'Peserta';
 $hp   = $data['no_hp'] ?? '';
 $misi = $data['mission'] ?? 'Misi Umum';
@@ -21,9 +20,8 @@ $link = $data['link'] ?? '';
 $hash = $data['video_hash'] ?? '';
 
 try {
-    // 3. CEK KECURANGAN KONTEN (ANTI RE-UPLOAD)
+    // 1. CEK KECURANGAN (ANTI RE-UPLOAD)
     if (!empty($hash)) {
-        // Gunakan Prepared Statement untuk SELECT
         $stmt = $pdo->prepare("SELECT id, nama_peserta FROM tickets WHERE video_hash = ?");
         $stmt->execute([$hash]);
         $pelaku = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -37,26 +35,49 @@ try {
         }
     }
 
-    // 4. GENERATE KODE UNIK
-   $kode = (string) rand(100000, 999999);
+    // 2. GENERATE KODE UNIK (6 Digit)
+    $kode = (string) rand(100000, 999999); 
+    $check = $pdo->prepare("SELECT id FROM tickets WHERE kode_unik = ?");
+    $check->execute([$kode]);
+    while($check->fetch()) { 
+        $kode = (string) rand(100000, 999999); 
+        $check->execute([$kode]); 
+    }
 
-    // 5. SIMPAN DATA (INSERT)
-    // Gunakan placeholder (?) untuk keamanan maksimal
+    // 3. SIMPAN DATA (INSERT)
     $sql = "INSERT INTO tickets (kode_unik, nama_peserta, no_hp, misi, video_link, video_hash, waktu_dibuat) 
             VALUES (?, ?, ?, ?, ?, ?, NOW())";
     
     $stmt = $pdo->prepare($sql);
     
-    // Eksekusi query dengan mengirim data array urut sesuai tanda tanya (?)
     if ($stmt->execute([$kode, $nama, $hp, $misi, $link, $hash])) {
+        
+        // --- MODIFIKASI FONNTE: KIRIM NOTIF WA ---
+        
+        // Format Pesan yang Menarik
+        $pesanWA = "*SELAMAT! MISI BERHASIL 🌲*\n\n";
+        $pesanWA .= "Halo Kak *$nama*, video kamu keren banget dan lolos verifikasi AI! 🤖✨\n\n";
+        $pesanWA .= "Ini Kode Voucher Makan Gratis kamu:\n";
+        $pesanWA .= "👇👇👇\n\n";
+        $pesanWA .= "*" . $kode . "*\n\n";
+        $pesanWA .= "👆👆👆\n";
+        $pesanWA .= "Tunjukkan chat ini ke panitia di Gate Jar'un untuk klaim hadiahmu.\n\n";
+        $pesanWA .= "_Jangan lupa screenshot jaga-jaga kalau sinyal hilang!_ 😉\n";
+        $pesanWA .= "~ Admin Bukit Jar'un";
+
+        // Eksekusi Kirim (Target No HP Peserta)
+        // Fungsi ini akan otomatis mengubah 08xx jadi 628xx
+        kirimPesanFonnte($hp, $pesanWA);
+
+        // -----------------------------------------
+
         echo json_encode(['status' => 'success', 'generated_code' => $kode]);
+
     } else {
         echo json_encode(['status' => 'error', 'msg' => 'Gagal menyimpan data ke database.']);
     }
 
 } catch (PDOException $e) {
-    // Tangkap error jika ada masalah database
     echo json_encode(['status' => 'error', 'msg' => 'Database Error: ' . $e->getMessage()]);
 }
 ?>
-
