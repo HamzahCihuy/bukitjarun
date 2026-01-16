@@ -1,7 +1,16 @@
 <?php
 function kirimPesanFonnte($target, $pesan) {
-    // GANTI TOKEN INI DENGAN TOKEN DARI DASHBOARD FONNTE KAMU
-    $token = getenv('FWA_API'); 
+    // 1. Ambil Token
+    $token = getenv('FONNTE_TOKEN'); 
+
+    // LOGGING 1: Cek apakah token terbaca?
+    if (!$token) {
+        error_log("❌ ERROR WA: Token FONNTE_TOKEN kosong/tidak terbaca di Railway!");
+        return false;
+    }
+
+    // LOGGING 2: Cek mau kirim kemana?
+    error_log("🚀 MENGIRIM WA KE: " . $target);
 
     $curl = curl_init();
 
@@ -10,14 +19,14 @@ function kirimPesanFonnte($target, $pesan) {
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_ENCODING => '',
       CURLOPT_MAXREDIRS => 10,
-      CURLOPT_TIMEOUT => 0,
+      CURLOPT_TIMEOUT => 0, // Tunggu sampai selesai
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
       CURLOPT_CUSTOMREQUEST => 'POST',
       CURLOPT_POSTFIELDS => array(
         'target' => $target,
         'message' => $pesan,
-        'countryCode' => '62', // Otomatis ubah 08 jadi 62
+        'countryCode' => '62', 
       ),
       CURLOPT_HTTPHEADER => array(
         "Authorization: $token"
@@ -26,7 +35,13 @@ function kirimPesanFonnte($target, $pesan) {
 
     $response = curl_exec($curl);
     
-    // Kita tidak perlu menunggu respon detail, tutup saja agar cepat
+    // LOGGING 3: Apa balasan dari Fonnte?
+    if (curl_errno($curl)) {
+        error_log("❌ CURL ERROR: " . curl_error($curl));
+    } else {
+        error_log("✅ BALASAN FONNTE: " . $response);
+    }
+
     curl_close($curl);
     
     return $response;
