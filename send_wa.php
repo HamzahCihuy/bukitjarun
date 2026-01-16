@@ -1,7 +1,7 @@
 <?php
 function kirimPesanFonnte($target, $pesan) {
     // GANTI TOKEN INI DENGAN TOKEN DARI DASHBOARD FONNTE KAMU
-    $token = "yDafQ7Nis41SGtVcVsThNx7UpoyXuapHT7M9gL"; 
+    $token = getenv('FWA_API'); 
 
     $curl = curl_init();
 
