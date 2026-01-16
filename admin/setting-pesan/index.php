@@ -1,11 +1,17 @@
 <?php
 session_start();
 if (!isset($_SESSION['admin_logged_in'])) {
-    header("Location: login.php");
+    // Arahkan ke login.php (Diasumsikan ada di folder admin utama)
+    // Mundur 1 langkah dari "whatsapp-jarun" ke "admin"
+    header("Location: ../login.php"); 
     exit;
 }
 
-include '../db/koneksi.php';
+// PERBAIKAN PATH DIREKTORI:
+// Dari: admin/whatsapp-jarun/index.php
+// Ke:   db/koneksi.php
+// Mundur 2 langkah (../../)
+include '../../db/koneksi.php';
 
 $message = "";
 
