@@ -4,8 +4,6 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     header("Location: login.php");
     exit;
 }
-// Cek session login (Opsional, aktifkan jika sudah ada sistem login)
-// if (!isset($_SESSION['username'])) { header("Location: login.php"); exit; }
 ?>
 
 <!DOCTYPE html>
@@ -33,7 +31,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             
-             <a href="input/input-ticket.php" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition transform hover:-translate-y-1 border-l-8 border-purple-500 group">
+            <a href="input/input-ticket.php" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition transform hover:-translate-y-1 border-l-8 border-purple-500 group">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-xl font-bold text-gray-800 group-hover:text-purple-600 transition">Input Voucher</h2>
                     <div class="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center">
@@ -84,14 +82,34 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
             </a>
 
             <a href="footer/index.php" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition transform hover:-translate-y-1 border-l-8 border-slate-700 group">
-    <div class="flex items-center justify-between mb-4">
-        <h2 class="text-xl font-bold text-gray-800 group-hover:text-slate-600 transition">Footer Setting</h2>
-        <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center">
-            <i class="fas fa-shoe-prints text-xl text-slate-700"></i>
-        </div>
-    </div>
-    <p class="text-gray-500 text-sm">Edit kontak, alamat, dan link sosmed.</p>
-</a>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-gray-800 group-hover:text-slate-600 transition">Footer Setting</h2>
+                    <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center">
+                        <i class="fas fa-shoe-prints text-xl text-slate-700"></i>
+                    </div>
+                </div>
+                <p class="text-gray-500 text-sm">Edit kontak, alamat, dan link sosmed.</p>
+            </a>
+
+            <a href="whatsapp-jarun/index.php" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition transform hover:-translate-y-1 border-l-8 border-teal-500 group">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-gray-800 group-hover:text-teal-600 transition">Token Bot WA</h2>
+                    <div class="w-12 h-12 rounded-full bg-teal-50 flex items-center justify-center">
+                        <i class="fab fa-whatsapp text-xl text-teal-500"></i>
+                    </div>
+                </div>
+                <p class="text-gray-500 text-sm">Ganti Nomor/Token Fonnte Bot.</p>
+            </a>
+
+            <a href="setting-pesan/index.php" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition transform hover:-translate-y-1 border-l-8 border-indigo-500 group">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-gray-800 group-hover:text-indigo-600 transition">Template Pesan</h2>
+                    <div class="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center">
+                        <i class="fas fa-comment-dots text-xl text-indigo-500"></i>
+                    </div>
+                </div>
+                <p class="text-gray-500 text-sm">Ubah kata-kata notifikasi WA otomatis.</p>
+            </a>
 
         </div>
     </div>
