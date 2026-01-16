@@ -1,7 +1,7 @@
 <?php
 function kirimPesanFonnte($target, $pesan) {
     // 1. Ambil Token
-    $token = 'yDafQ7Nis41SGtVcVsThNx7UpoyXuapHT7M9gL';
+    $token = "yDafQ7Nis41SGtVcVsThNx7UpoyXuapHT7M9gL";
 
     // LOGGING 1: Cek apakah token terbaca?
     if (!$token) {
