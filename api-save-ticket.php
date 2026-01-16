@@ -1,16 +1,27 @@
 <?php
 header('Content-Type: application/json');
 
-// INCLUDE KONEKSI & FUNGSI WA
-if (file_exists('db/koneksi.php')) { include 'db/koneksi.php'; } 
-elseif (file_exists('koneksi.php')) { include 'koneksi.php'; } 
-else { echo json_encode(['status' => 'error', 'msg' => 'Koneksi DB hilang']); exit; }
+// 1. INCLUDE KONEKSI DATABASE
+// Gunakan __DIR__ agar path absolut dan tidak error
+if (file_exists(__DIR__ . '/db/koneksi.php')) { 
+    include __DIR__ . '/db/koneksi.php'; 
+} elseif (file_exists(__DIR__ . '/koneksi.php')) { 
+    include __DIR__ . '/koneksi.php'; 
+} else { 
+    echo json_encode(['status' => 'error', 'msg' => 'Koneksi DB hilang']); 
+    exit; 
+}
 
-// INCLUDE FILE WA YANG BARU DIBUAT
-include 'send_wa.php';
+// 2. INCLUDE FUNGSI WA
+// Pastikan file send_wa.php ada di folder yang sama
+if (file_exists(__DIR__ . '/send_wa.php')) {
+    include __DIR__ . '/send_wa.php';
+}
 
+// Pastikan variabel PDO tersedia
 if (!isset($pdo) && isset($conn)) { $pdo = $conn; }
 
+// 3. AMBIL DATA DARI INPUT JSON
 $data = json_decode(file_get_contents("php://input"), true);
 
 $nama = $data['name'] ?? 'Peserta';
@@ -20,7 +31,7 @@ $link = $data['link'] ?? '';
 $hash = $data['video_hash'] ?? '';
 
 try {
-    // 1. CEK KECURANGAN (ANTI RE-UPLOAD)
+    // A. CEK KECURANGAN (ANTI RE-UPLOAD VIDEO)
     if (!empty($hash)) {
         $stmt = $pdo->prepare("SELECT id, nama_peserta FROM tickets WHERE video_hash = ?");
         $stmt->execute([$hash]);
@@ -35,67 +46,53 @@ try {
         }
     }
 
-    // 2. GENERATE KODE UNIK (6 Digit)
+    // B. GENERATE KODE UNIK (6 Digit Angka)
     $kode = (string) rand(100000, 999999); 
     $check = $pdo->prepare("SELECT id FROM tickets WHERE kode_unik = ?");
     $check->execute([$kode]);
+    
+    // Loop sampai nemu kode yang belum ada di DB
     while($check->fetch()) { 
         $kode = (string) rand(100000, 999999); 
         $check->execute([$kode]); 
     }
 
-    // 3. SIMPAN DATA (INSERT)
-    $sql = "INSERT INTO tickets (kode_unik, nama_peserta, no_hp, misi, video_link, video_hash, waktu_dibuat) 
-            VALUES (?, ?, ?, ?, ?, ?, NOW())";
+    // C. SIMPAN DATA (INSERT)
+    $sql = "INSERT INTO tickets (kode_unik, nama_peserta, no_hp, misi, video_link, video_hash, waktu_dibuat, status) 
+            VALUES (?, ?, ?, ?, ?, ?, NOW(), 'unused')";
     
     $stmt = $pdo->prepare($sql);
     
     if ($stmt->execute([$kode, $nama, $hp, $misi, $link, $hash])) {
         
-// ... (Bagian atas kode kamu tetap sama) ...
+        // --- SUKSES SIMPAN: KIRIM WA DISINI ---
         
-        if ($stmt->execute([$kode, $nama, $hp, $misi, $link, $hash])) {
-       
-            // --- MODIFIKASI DINAMIS (TEMPLATE DARI DB) ---
-       
-            // 1. Ambil Template dari Database
-            $template_pesan = "";
-            try {
-                $stmt_tpl = $pdo->prepare("SELECT setting_value FROM settings WHERE setting_key = 'wa_template_success'");
-                $stmt_tpl->execute();
-                $data_tpl = $stmt_tpl->fetch(PDO::FETCH_ASSOC);
-                $template_pesan = $data_tpl['setting_value'] ?? '';
-            } catch (Exception $e) {}
+        if (function_exists('kirimPesanFonnte') && !empty($hp)) {
+            // Format Pesan WA
+            $pesanWA = "*SELAMAT! MISI BERHASIL 🌲*\n\n";
+            $pesanWA .= "Halo Kak *$nama*, video kamu keren banget dan lolos verifikasi AI! 🤖✨\n\n";
+            $pesanWA .= "Ini Kode Voucher Makan Gratis kamu:\n";
+            $pesanWA .= "👇👇👇\n\n";
+            $pesanWA .= "*" . $kode . "*\n\n";
+            $pesanWA .= "👆👆👆\n";
+            $pesanWA .= "Tunjukkan chat ini ke panitia di Gate Jar'un untuk klaim hadiahmu.\n\n";
+            $pesanWA .= "_Jangan lupa screenshot pesan ini!_ 😉\n";
+            $pesanWA .= "~ Admin Bukit Jar'un";
 
-            // 2. Fallback (Jaga-jaga kalau admin belum set template)
-            if (empty($template_pesan)) {
-                $template_pesan = "*SELAMAT! MISI {misi} BERHASIL*\n\nHalo *{nama}*, ini kode vouchermu: *{kode}*";
-            }
-
-            // 3. Replace Shortcode ({nama} jadi Budi, dst)
-            $replacements = [
-                '{nama}' => $nama,
-                '{kode}' => $kode,
-                '{misi}' => $misi,
-                '{link}' => $link,
-                '{hp}'   => $hp
-            ];
-
-            // Tukar {key} dengan value aslinya
-            $pesanWA = str_replace(array_keys($replacements), array_values($replacements), $template_pesan);
-
-            // 4. Kirim WA
+            // Kirim
             kirimPesanFonnte($hp, $pesanWA);
+        }
 
-            // -----------------------------------------
+        // Response ke Web agar redirect ke halaman voucher
+        echo json_encode(['status' => 'success', 'generated_code' => $kode]);
 
-            echo json_encode(['status' => 'success', 'generated_code' => $kode]);
+    } else {
+        echo json_encode(['status' => 'error', 'msg' => 'Gagal menyimpan data ke database.']);
+    }
 
-        } else {
-            // ... (Kode error handling kamu tetap sama) ...
-
-} catch (PDOException $e) {
+} catch (PDOException $e) { // <--- BARIS 97 (ERROR SEBELUMNYA DI SINI)
+    // Error biasanya terjadi karena Kurung Kurawal "}" penutup TRY di atas hilang.
+    // Di kode ini sudah saya pastikan ada.
     echo json_encode(['status' => 'error', 'msg' => 'Database Error: ' . $e->getMessage()]);
 }
 ?>
-
