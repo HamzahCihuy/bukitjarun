@@ -1,39 +1,53 @@
 <?php
+// Pastikan variabel koneksi di file ini adalah $conn (PDO Object)
 include 'db/koneksi.php';
-$sql_count = "SELECT COUNT(*) as total FROM ide_konten";
-$result_count = mysqli_query($conn, $sql_count);
-$data_count = mysqli_fetch_assoc($result_count);
-$total_konten = $data_count['total'];
 
-// --- LOGIKA TAMBAH DATA ---
+// --- LOGIKA HITUNG TOTAL DATA (PDO WAY) ---
+try {
+    $sql_count = "SELECT COUNT(*) as total FROM ide_konten";
+    $stmt_count = $conn->query($sql_count);
+    $data_count = $stmt_count->fetch(PDO::FETCH_ASSOC);
+    $total_konten = $data_count['total'];
+} catch (PDOException $e) {
+    $total_konten = 0;
+}
+
+// --- LOGIKA TAMBAH DATA (PREPARED STATEMENT) ---
 if (isset($_POST['submit'])) {
-    $judul  = $_POST['judul'];
-    $visual = $_POST['scene_visual'];
-    $vo     = $_POST['voice_over'];
-    $ref    = $_POST['referensi'];
-    
-    $judul  = mysqli_real_escape_string($conn, $judul);
-    $visual = mysqli_real_escape_string($conn, $visual);
-    $vo     = mysqli_real_escape_string($conn, $vo);
-    $ref    = mysqli_real_escape_string($conn, $ref);
-    
-    mysqli_query($conn, "INSERT INTO ide_konten (judul, scene_visual, voice_over, referensi) VALUES ('$judul', '$visual', '$vo', '$ref')");
-    header("Location: konten-manager.php");
+    try {
+        $sql = "INSERT INTO ide_konten (judul, scene_visual, voice_over, referensi) VALUES (:judul, :visual, :vo, :ref)";
+        $stmt = $conn->prepare($sql);
+        
+        // Binding parameter (Lebih aman & otomatis escape string)
+        $data = [
+            ':judul'  => $_POST['judul'],
+            ':visual' => $_POST['scene_visual'],
+            ':vo'     => $_POST['voice_over'],
+            ':ref'    => $_POST['referensi']
+        ];
+        
+        $stmt->execute($data);
+        header("Location: konten-manager.php");
+        exit();
+    } catch (PDOException $e) {
+        echo "Error Simpan: " . $e->getMessage();
+    }
 }
 
-// --- LOGIKA HAPUS DATA ---
+// --- LOGIKA HAPUS DATA (PREPARED STATEMENT) ---
 if (isset($_POST['hapus_id'])) {
-    $id = intval($_POST['hapus_id']);
-    mysqli_query($conn, "DELETE FROM ide_konten WHERE id = $id");
-    header("Location: konten-manager.php");
-    exit();
+    try {
+        $id = intval($_POST['hapus_id']);
+        $stmt = $conn->prepare("DELETE FROM ide_konten WHERE id = :id");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        header("Location: konten-manager.php");
+        exit();
+    } catch (PDOException $e) {
+        echo "Error Hapus: " . $e->getMessage();
+    }
 }
-
-// HITUNG TOTAL UPDATE
-$sql_count = "SELECT COUNT(*) as total FROM ide_konten";
-$result_count = mysqli_query($conn, $sql_count);
-$data_count = mysqli_fetch_assoc($result_count);
-$total_konten = $data_count['total'];
 ?>
 
 <!DOCTYPE html>
@@ -51,7 +65,8 @@ $total_konten = $data_count['total'];
         /* --- GLOBAL STYLES --- */
         body {
             font-family: 'Poppins', sans-serif;
-            background: url('bg.png') no-repeat center center fixed;
+            /* Ganti bg.png dengan warna solid jika gambar tidak ada */
+            background: #f0f2f5 url('bg.png') no-repeat center center fixed;
             background-size: cover;
             min-height: 100vh;
         }
@@ -180,6 +195,7 @@ $total_konten = $data_count['total'];
                     </thead>
                     <tbody>
                     <?php
+                    // --- LOGIKA FETCH DATA DENGAN PDO ---
                     $sort_level = isset($_GET['sort']) ? $_GET['sort'] : '';
                     $query_str = "SELECT * FROM ide_konten";
 
@@ -191,8 +207,11 @@ $total_konten = $data_count['total'];
                         $query_str .= " ORDER BY id DESC";
                     }
 
-                    $query = mysqli_query($conn, $query_str);
-                    while ($row = mysqli_fetch_assoc($query)) :
+                    // Eksekusi Query PDO
+                    $stmt = $conn->query($query_str);
+                    
+                    // Loop menggunakan fetch()
+                    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) :
                         $collapseID = "detail-" . $row['id'];
                         $text_visual = $row['scene_visual'];
                         $jumlah_scene = substr_count(strtolower($text_visual), 'scene');
@@ -251,7 +270,7 @@ $total_konten = $data_count['total'];
                 </table>
             </div>
             
-            <?php if(mysqli_num_rows($query) == 0): ?>
+            <?php if($stmt->rowCount() == 0): ?>
                 <div class="text-center text-muted py-5">
                     <i class="fas fa-folder-open fa-3x mb-3 opacity-50"></i>
                     <p>Belum ada ide konten. Yuk catat sekarang!</p>
@@ -346,29 +365,50 @@ document.addEventListener('DOMContentLoaded', function() {
     containers.forEach(container => {
         const visualText = container.querySelector('.raw-visual').innerText;
         const voText = container.querySelector('.raw-vo').innerText;
+        
+        // Regex split yang sama seperti sebelumnya
         const splitByScene = (text) => {
             const parts = text.split(/(?=Scene\s*\d+[:\s])/i);
             return parts.filter(p => p.trim() !== "");
         };
+
         const visualScenes = splitByScene(visualText);
         const voScenes = splitByScene(voText);
         const maxScenes = Math.max(visualScenes.length, voScenes.length);
+        
         let htmlOutput = "";
-        for (let i = 0; i < maxScenes; i++) {
-            const vContent = visualScenes[i] ? visualScenes[i].replace(/\n/g, '<br>') : "-";
-            const voContent = voScenes[i] ? voScenes[i].replace(/\n/g, '<br>') : "-";
-            htmlOutput += `
-                <div class="row mb-2 pb-2 ${i < maxScenes - 1 ? 'border-bottom border-light' : ''}">
+        
+        // Jika tidak ada kata "Scene", tampilkan apa adanya
+        if (maxScenes === 0 && (visualText.trim() !== "" || voText.trim() !== "")) {
+             htmlOutput += `
+                <div class="row mb-2 pb-2">
                     <div class="col-6 border-end">
                         <label class="small text-muted fw-bold d-block" style="font-size:0.65rem;">VISUAL</label>
-                        <div class="small text-dark">${vContent}</div>
+                        <div class="small text-dark">${visualText}</div>
                     </div>
                     <div class="col-6">
                         <label class="small text-muted fw-bold d-block" style="font-size:0.65rem;">VOICE OVER</label>
-                        <div class="small text-dark fst-italic"><i class="fas fa-quote-left text-success me-1" style="font-size:0.6rem;"></i>${voContent}</div>
+                        <div class="small text-dark fst-italic"><i class="fas fa-quote-left text-success me-1" style="font-size:0.6rem;"></i>${voText}</div>
                     </div>
-                </div>
-            `;
+                </div>`;
+        } else {
+            for (let i = 0; i < maxScenes; i++) {
+                const vContent = visualScenes[i] ? visualScenes[i].replace(/\n/g, '<br>') : "-";
+                const voContent = voScenes[i] ? voScenes[i].replace(/\n/g, '<br>') : "-";
+                
+                htmlOutput += `
+                    <div class="row mb-2 pb-2 ${i < maxScenes - 1 ? 'border-bottom border-light' : ''}">
+                        <div class="col-6 border-end">
+                            <label class="small text-muted fw-bold d-block" style="font-size:0.65rem;">VISUAL</label>
+                            <div class="small text-dark">${vContent}</div>
+                        </div>
+                        <div class="col-6">
+                            <label class="small text-muted fw-bold d-block" style="font-size:0.65rem;">VOICE OVER</label>
+                            <div class="small text-dark fst-italic"><i class="fas fa-quote-left text-success me-1" style="font-size:0.6rem;"></i>${voContent}</div>
+                        </div>
+                    </div>
+                `;
+            }
         }
         container.innerHTML += htmlOutput;
     });
